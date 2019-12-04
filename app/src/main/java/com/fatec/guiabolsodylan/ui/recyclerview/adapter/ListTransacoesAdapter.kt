@@ -5,9 +5,9 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
-import br.com.ajchagas.guiabolsobrq.R
-import br.com.ajchagas.guiabolsobrq.model.TipoTransacao
+import com.fatec.guiabolsodylan.model.TipoTransacao
 import br.com.ajchagas.guiabolsobrq.model.Transacao
+import com.fatec.guiabolsodylan.R
 import kotlinx.android.synthetic.main.extrato_item_transacao.view.*
 
 class ListTransacoesAdapter(

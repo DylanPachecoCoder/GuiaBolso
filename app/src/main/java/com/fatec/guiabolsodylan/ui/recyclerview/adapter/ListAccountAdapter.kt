@@ -5,17 +5,24 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
-import br.com.ajchagas.guiabolsobrq.R
-import br.com.ajchagas.guiabolsobrq.extension.formataMoedaParaBrasileiro
-import br.com.ajchagas.guiabolsobrq.model.Conta
+import com.fatec.guiabolsodylan.extension.formataMoedaParaBrasileiro
+import com.fatec.guiabolsodylan.R
+import com.fatec.guiabolsodylan.model.Conta
 import kotlinx.android.synthetic.main.item_conta.view.*
 
 class ListAccountAdapter(
-    private val contas: MutableList<Conta> = mutableListOf(),
+    var listaContas: MutableList<Conta> = mutableListOf(),
     private val context: Context,
-    val clickListener: (Conta) -> Unit = {},
+    var clickListener: (Conta) -> Unit = {},
     val longClickListener: (Conta) -> Boolean = {false}
 ) : RecyclerView.Adapter<ListAccountAdapter.ViewHolder>(){
+
+    fun atualiza(contas: List<Conta>) {
+        notifyItemRangeRemoved(0, this.listaContas.size)
+        this.listaContas.clear()
+        this.listaContas.addAll(contas)
+        notifyItemRangeInserted(0, this.listaContas.size)
+    }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val viewCriada = LayoutInflater.from(context)
@@ -24,11 +31,11 @@ class ListAccountAdapter(
     }
 
     override fun getItemCount(): Int {
-        return contas.size
+        return listaContas.size
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        val contaSeleccionada = contas[position]
+        val contaSeleccionada = listaContas[position]
 
         holder.bindView(contaSeleccionada, clickListener, longClickListener)
 

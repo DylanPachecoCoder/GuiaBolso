@@ -1,4 +1,4 @@
-package br.com.ajchagas.guiabolsobrq.model
+package com.fatec.guiabolsodylan.model
 
 enum class TipoTransacao {
     Debito,

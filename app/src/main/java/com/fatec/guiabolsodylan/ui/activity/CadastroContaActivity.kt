@@ -1,11 +1,11 @@
-package br.com.ajchagas.guiabolsobrq.ui.activity
+package com.fatec.guiabolsodylan.ui.activity
 
 import android.graphics.Typeface
 import android.os.Bundle
 import android.widget.ArrayAdapter
 import androidx.appcompat.app.AppCompatActivity
-import br.com.ajchagas.guiabolsobrq.R
 import br.com.ajchagas.guiabolsobrq.validator.ValidacaoPadrao
+import com.fatec.guiabolsodylan.R
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.textfield.TextInputLayout
 import kotlinx.android.synthetic.main.activity_cadastro.*
