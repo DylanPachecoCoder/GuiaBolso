@@ -8,6 +8,7 @@ import java.math.BigDecimal
 @Entity
 class Conta(
     val apelido: String,
+    val nomeTitular: String,
     val agencia: String,
     val numeroConta: String,
     val saldo: BigDecimal = BigDecimal.ZERO,

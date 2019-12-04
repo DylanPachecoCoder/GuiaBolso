@@ -18,7 +18,7 @@ class BuscaClientesTask(
     override fun onPostExecute(listaContas: List<Conta>?) {
         super.onPostExecute(listaContas)
         if(listaContas != null){
-            adapter.listaContas = listaContas as MutableList<Conta>
+            adapter.atualiza(listaContas)
         }
     }
 }

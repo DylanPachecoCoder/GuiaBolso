@@ -10,7 +10,7 @@ import com.fatec.guiabolsodylan.database.converter.CalendarConverter
 import com.fatec.guiabolsodylan.model.Conta
 import com.fatec.guiabolsodylan.database.dao.ContaDAO
 
-@Database(entities = [Conta::class], version = 1, exportSchema = false)
+@Database(entities = [Conta::class], version = 2, exportSchema = false)
 @TypeConverters(*[BigDecimalConverter::class])
 abstract class GuiaBolsoDatabase : RoomDatabase() {
     abstract fun contaDAO(): ContaDAO

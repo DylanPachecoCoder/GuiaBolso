@@ -1,21 +1,25 @@
 package br.com.ajchagas.guiabolsobrq.ui.recyclerview.adapter
 
 import android.content.Context
+import android.view.ContextMenu
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.appcompat.app.AlertDialog
 import androidx.recyclerview.widget.RecyclerView
 import com.fatec.guiabolsodylan.extension.formataMoedaParaBrasileiro
 import com.fatec.guiabolsodylan.R
+import com.fatec.guiabolsodylan.database.dao.ContaDAO
 import com.fatec.guiabolsodylan.model.Conta
 import kotlinx.android.synthetic.main.item_conta.view.*
 
 class ListAccountAdapter(
+    private var dao: ContaDAO,
     var listaContas: MutableList<Conta> = mutableListOf(),
     private val context: Context,
-    var clickListener: (Conta) -> Unit = {},
-    val longClickListener: (Conta) -> Boolean = {false}
-) : RecyclerView.Adapter<ListAccountAdapter.ViewHolder>(){
+    var clickListener: (Conta) -> Unit = {}
+
+) : RecyclerView.Adapter<ListAccountAdapter.ViewHolder>() {
 
     fun atualiza(contas: List<Conta>) {
         notifyItemRangeRemoved(0, this.listaContas.size)
@@ -35,19 +39,41 @@ class ListAccountAdapter(
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        val contaSeleccionada = listaContas[position]
+        val conta = listaContas[position]
 
-        holder.bindView(contaSeleccionada, clickListener, longClickListener)
+        holder.bindView(conta, clickListener)
 
     }
 
-    inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView){
+    inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView),
+        View.OnCreateContextMenuListener {
+
+        override fun onCreateContextMenu(
+            menu: ContextMenu?,
+            v: View?,
+            menuInfo: ContextMenu.ContextMenuInfo?
+        ) {
+            menu?.add(this.adapterPosition, v!!.id, 0, "Remover")?.setOnMenuItemClickListener {
+                val conta = listaContas[this.adapterPosition]
+                var alertDialog = AlertDialog.Builder(context)
+                alertDialog.setTitle("Remover")
+                alertDialog.setMessage("Deseja remover este cliente ?")
+                alertDialog.setPositiveButton("Sim") { _, _ ->
+                    dao.remove(conta)
+                    atualiza(dao.all())
+                    notifyDataSetChanged()
+                }
+                alertDialog.setNegativeButton("Não") { _, _ ->
+                }
+                alertDialog.show()
+                true
+            }
+        }
 
 
         fun bindView(
             contaSelecionada: Conta,
-            cliclListener: (Conta) -> Unit,
-            longClickListener: (Conta) -> Boolean
+            cliclListener: (Conta) -> Unit
         ) {
 
             itemView.item_conta_apelido.text = contaSelecionada.apelido
@@ -55,7 +81,7 @@ class ListAccountAdapter(
             itemView.item_conta_textview_numero_conta.text = contaSelecionada.numeroConta
             itemView.item_conta_textview_saldo.text = contaSelecionada.saldo.formataMoedaParaBrasileiro()
             itemView.setOnClickListener { cliclListener(contaSelecionada) }
-            itemView.setOnLongClickListener{ longClickListener(contaSelecionada) }
+            itemView.setOnCreateContextMenuListener(this)
         }
 
     }

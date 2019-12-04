@@ -31,6 +31,7 @@ class ExtratoActivity : AppCompatActivity() {
 
     private fun preencheDadosConta() {
         val conta = intent.getSerializableExtra("conta") as Conta
+        extrato_textview_nome_titular.text = conta.nomeTitular
         extrato_textview_saldo_total.text = conta.saldo.formataMoedaParaBrasileiro()
         extrato_textview_nome_banco.text = conta.apelido
         extrato_textview_numero_agencia.text = conta.agencia

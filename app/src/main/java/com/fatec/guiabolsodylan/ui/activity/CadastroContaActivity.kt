@@ -1,18 +1,23 @@
 package com.fatec.guiabolsodylan.ui.activity
 
-import android.graphics.Typeface
 import android.os.Bundle
 import android.widget.ArrayAdapter
 import androidx.appcompat.app.AppCompatActivity
 import br.com.ajchagas.guiabolsobrq.validator.ValidacaoPadrao
 import com.fatec.guiabolsodylan.R
-import com.google.android.material.snackbar.Snackbar
+import com.fatec.guiabolsodylan.database.GuiaBolsoDatabase
+import com.fatec.guiabolsodylan.database.asynctask.SalvaContaTask
+import com.fatec.guiabolsodylan.database.dao.ContaDAO
+import com.fatec.guiabolsodylan.model.Conta
 import com.google.android.material.textfield.TextInputLayout
 import kotlinx.android.synthetic.main.activity_cadastro.*
 import kotlinx.android.synthetic.main.toolbar.*
+import java.math.BigDecimal
 
 
 class CadastroContaActivity : AppCompatActivity() {
+
+    private lateinit var dao : ContaDAO
 
     private val validators : MutableList<ValidacaoPadrao> = mutableListOf()
     private val app_name = "Cadastro Conta"
@@ -20,6 +25,9 @@ class CadastroContaActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_cadastro)
+
+        val database = GuiaBolsoDatabase.getInstance(this)
+        dao = database.contaDAO()
 
         configuraToolBar()
         configuraSpinner()
@@ -39,9 +47,20 @@ class CadastroContaActivity : AppCompatActivity() {
         cadastro_botao_Salvar.setOnClickListener { view ->
 
             if (validaTodosOsCampos()) {
-                Snackbar.make(view, "Implementa evento do botão", Snackbar.LENGTH_LONG).show()
+//                cadastro_spinner_bancos
+                salvaConta()
+                finish()
             }
         }
+    }
+
+    private fun salvaConta() {
+        val apelido = cadastro_edit_text_apelido.text.toString()
+        val nomeTitular = cadastro_edit_text_nome_titular.text.toString()
+        val agencia = cadastro_edit_text_agencia.text.toString()
+        val conta = cadastro_edit_text_conta.text.toString()
+        val novaConta = Conta(apelido, nomeTitular, agencia, conta, BigDecimal(00.65))
+        SalvaContaTask(dao, novaConta).execute()
     }
 
     private fun validaTodosOsCampos() : Boolean{
