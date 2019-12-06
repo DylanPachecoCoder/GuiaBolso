@@ -2,11 +2,15 @@ package com.fatec.guiabolsodylan.ui.activity
 
 import android.content.Intent
 import android.os.Bundle
+import android.view.MenuItem
+import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import br.com.ajchagas.guiabolsobrq.ui.recyclerview.adapter.ListAccountAdapter
 import com.fatec.guiabolsodylan.R
 import com.fatec.guiabolsodylan.database.GuiaBolsoDatabase
 import com.fatec.guiabolsodylan.database.asynctask.BuscaClientesTask
+import com.fatec.guiabolsodylan.database.asynctask.RemoveContaTask
 import com.fatec.guiabolsodylan.database.asynctask.SomaSaldoTask
 import com.fatec.guiabolsodylan.database.dao.ContaDAO
 import com.fatec.guiabolsodylan.model.Conta
@@ -131,6 +135,21 @@ class ListAccountActivity : AppCompatActivity() {
     private fun abreActivityCadastroConta() {
         val vaiParaActivityCadastroConta = Intent(this, CadastroContaActivity::class.java)
         startActivity(vaiParaActivityCadastroConta)
+    }
+
+    override fun onContextItemSelected(item: MenuItem): Boolean {
+        val alertDialog = AlertDialog.Builder(this)
+        alertDialog.setTitle("Remover")
+        alertDialog.setMessage("Deseja remover este cliente ?")
+        alertDialog.setPositiveButton("Sim") { _, _ ->
+            val position = item.order
+            val conta = adapter.getConta(position)
+            RemoveContaTask(dao, conta, adapter).execute()
+        }
+        alertDialog.setNegativeButton("Não") { _, _ ->
+        }
+        alertDialog.show()
+        return super.onContextItemSelected(item)
     }
 
 }

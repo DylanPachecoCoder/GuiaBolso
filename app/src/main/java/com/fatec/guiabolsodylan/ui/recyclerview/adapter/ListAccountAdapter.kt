@@ -45,6 +45,10 @@ class ListAccountAdapter(
 
     }
 
+    fun getConta(position: Int): Conta {
+        return listaContas[position]
+    }
+
     inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView),
         View.OnCreateContextMenuListener {
 
@@ -53,23 +57,8 @@ class ListAccountAdapter(
             v: View?,
             menuInfo: ContextMenu.ContextMenuInfo?
         ) {
-            menu?.add(this.adapterPosition, v!!.id, 0, "Remover")?.setOnMenuItemClickListener {
-                val conta = listaContas[this.adapterPosition]
-                var alertDialog = AlertDialog.Builder(context)
-                alertDialog.setTitle("Remover")
-                alertDialog.setMessage("Deseja remover este cliente ?")
-                alertDialog.setPositiveButton("Sim") { _, _ ->
-                    dao.remove(conta)
-                    atualiza(dao.all())
-                    notifyDataSetChanged()
-                }
-                alertDialog.setNegativeButton("Não") { _, _ ->
-                }
-                alertDialog.show()
-                true
-            }
+            menu?.add(0, v!!.id, adapterPosition, "Remover")
         }
-
 
         fun bindView(
             contaSelecionada: Conta,

@@ -22,7 +22,6 @@ abstract class GuiaBolsoDatabase : RoomDatabase() {
                 GuiaBolsoDatabase::class.java,
                 "guiaBolso.db"
             )
-                .allowMainThreadQueries()
                 .fallbackToDestructiveMigration()
                 .build()
         }
