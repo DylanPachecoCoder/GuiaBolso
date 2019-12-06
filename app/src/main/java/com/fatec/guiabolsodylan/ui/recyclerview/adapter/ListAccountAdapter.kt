@@ -14,7 +14,7 @@ import com.fatec.guiabolsodylan.model.Conta
 import kotlinx.android.synthetic.main.item_conta.view.*
 
 class ListAccountAdapter(
-    private var dao: ContaDAO,
+    //private var dao: ContaDAO,
     var listaContas: MutableList<Conta> = mutableListOf(),
     private val context: Context,
     var clickListener: (Conta) -> Unit = {}
@@ -57,7 +57,10 @@ class ListAccountAdapter(
             v: View?,
             menuInfo: ContextMenu.ContextMenuInfo?
         ) {
-            menu?.add(0, v!!.id, adapterPosition, "Remover")
+            menu?.setHeaderTitle("Escolha uma ação: ")
+            menu?.add(0, v!!.id, adapterPosition, "Editar apelido")
+            menu?.add(1, v!!.id, adapterPosition, "Remover")
+
         }
 
         fun bindView(

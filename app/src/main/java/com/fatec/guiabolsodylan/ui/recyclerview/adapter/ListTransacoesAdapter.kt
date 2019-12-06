@@ -6,14 +6,22 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.fatec.guiabolsodylan.model.TipoTransacao
-import br.com.ajchagas.guiabolsobrq.model.Transacao
+import com.fatec.guiabolsodylan.model.Transacao
 import com.fatec.guiabolsodylan.R
+import com.fatec.guiabolsodylan.model.Conta
 import kotlinx.android.synthetic.main.extrato_item_transacao.view.*
 
 class ListTransacoesAdapter(
-    private val listaTransacoes: MutableList<Transacao>,
-    private val context: Context) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+    private val listaTransacoes: MutableList<Transacao> = mutableListOf(),
+    private val context: Context
+) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
+    fun atualiza(transacoes: List<Transacao>) {
+        notifyItemRangeRemoved(0, this.listaTransacoes.size)
+        this.listaTransacoes.clear()
+        this.listaTransacoes.addAll(transacoes)
+        notifyItemRangeInserted(0, this.listaTransacoes.size)
+    }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         val view = LayoutInflater.from(context).inflate(R.layout.extrato_item_transacao, parent, false)

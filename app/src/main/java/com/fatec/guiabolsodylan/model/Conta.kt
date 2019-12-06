@@ -7,7 +7,7 @@ import java.math.BigDecimal
 
 @Entity
 class Conta(
-    val apelido: String,
+    var apelido: String,
     val nomeTitular: String,
     val agencia: String,
     val numeroConta: String,
