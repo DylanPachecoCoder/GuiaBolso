@@ -47,7 +47,6 @@ class CadastroContaActivity : AppCompatActivity() {
         cadastro_botao_Salvar.setOnClickListener { view ->
 
             if (validaTodosOsCampos()) {
-//                cadastro_spinner_bancos
                 salvaConta()
                 finish()
             }

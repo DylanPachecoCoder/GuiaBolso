@@ -2,19 +2,24 @@ package com.fatec.guiabolsodylan.ui.activity
 
 import android.content.Intent
 import android.os.Bundle
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import br.com.ajchagas.guiabolsobrq.ui.recyclerview.adapter.ListAccountAdapter
+import br.com.alura.technews.retrofit.webclient.BancoWebClient
 import com.fatec.guiabolsodylan.R
 import com.fatec.guiabolsodylan.database.GuiaBolsoDatabase
+import com.fatec.guiabolsodylan.database.asynctask.BaseAsyncTask
 import com.fatec.guiabolsodylan.database.asynctask.BuscaClientesTask
-import com.fatec.guiabolsodylan.database.asynctask.SomaSaldoTask
 import com.fatec.guiabolsodylan.database.dao.ContaDAO
+import com.fatec.guiabolsodylan.extension.formataMoedaParaBrasileiro
 import com.fatec.guiabolsodylan.model.Conta
 import kotlinx.android.synthetic.main.activity_list_account.*
 import kotlinx.android.synthetic.main.recycler_view_list_account.*
+import java.math.BigDecimal
 
 class ListAccountActivity : AppCompatActivity() {
 
+    private val webclient: BancoWebClient = BancoWebClient()
     private lateinit var dao : ContaDAO
 
     private val adapter by lazy {
@@ -29,6 +34,15 @@ class ListAccountActivity : AppCompatActivity() {
         buscaContas()
         configuraFAB()
         somaSaldo()
+//        webclient.buscaTodas(
+//            quandoSucesso = { noticiasNovas ->
+//                noticiasNovas?.let {
+//                    Toast.makeText(this, it[0].toString(), Toast.LENGTH_SHORT).show()
+//                }
+//            }, quandoFalha = {
+//                Toast.makeText(this, it, Toast.LENGTH_SHORT).show()
+//            }
+//        )
     }
 
     override fun onResume() {
@@ -38,7 +52,17 @@ class ListAccountActivity : AppCompatActivity() {
     }
 
     private fun somaSaldo() {
-        SomaSaldoTask(dao, item_saldo_total_valor).execute()
+        BaseAsyncTask(quandoExecuta = {
+            val listaContas = dao.all()
+            var saldo = BigDecimal.ZERO
+
+            for(conta : Conta in listaContas){
+                saldo +=  conta.saldo
+            }
+            saldo
+        }, quandoFinaliza = { saldo ->
+            item_saldo_total_valor.text = saldo.formataMoedaParaBrasileiro()
+        }).execute()
     }
 
     private fun buscaContas() {

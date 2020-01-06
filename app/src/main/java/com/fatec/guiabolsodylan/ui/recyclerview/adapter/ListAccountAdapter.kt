@@ -47,7 +47,6 @@ class ListAccountAdapter(
 
     inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView),
         View.OnCreateContextMenuListener {
-
         override fun onCreateContextMenu(
             menu: ContextMenu?,
             v: View?,
@@ -70,12 +69,10 @@ class ListAccountAdapter(
             }
         }
 
-
         fun bindView(
             contaSelecionada: Conta,
             cliclListener: (Conta) -> Unit
         ) {
-
             itemView.item_conta_apelido.text = contaSelecionada.apelido
             itemView.item_conta_textview_agencia.text = contaSelecionada.agencia
             itemView.item_conta_textview_numero_conta.text = contaSelecionada.numeroConta
@@ -83,8 +80,6 @@ class ListAccountAdapter(
             itemView.setOnClickListener { cliclListener(contaSelecionada) }
             itemView.setOnCreateContextMenuListener(this)
         }
-
     }
-
 }
 
