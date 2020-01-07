@@ -4,12 +4,16 @@ import android.app.DatePickerDialog
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.EditText
+import android.widget.Toast
 import com.fatec.guiabolsodylan.extension.formataParaBrasileiro
 import com.fatec.guiabolsodylan.model.Conta
 import com.fatec.guiabolsodylan.model.TipoTransacao
-import br.com.ajchagas.guiabolsobrq.model.Transacao
+import com.fatec.guiabolsodylan.model.Transacao
 import br.com.ajchagas.guiabolsobrq.ui.recyclerview.adapter.ListTransacoesAdapter
 import com.fatec.guiabolsodylan.R
+import com.fatec.guiabolsodylan.database.GuiaBolsoDatabase
+import com.fatec.guiabolsodylan.database.dao.ContaDAO
+import com.fatec.guiabolsodylan.database.dao.TransacaoDAO
 import com.fatec.guiabolsodylan.extension.formataMoedaParaBrasileiro
 import kotlinx.android.synthetic.main.activity_extrato.*
 import kotlinx.android.synthetic.main.recyclerview_list_transacoes.*
@@ -18,19 +22,37 @@ import java.util.*
 
 class ExtratoActivity : AppCompatActivity() {
 
+    private lateinit var conta: Conta
+    private lateinit var transacaoDAO : TransacaoDAO
+
+    private val adapter by lazy{
+        ListTransacoesAdapter(context = this)
+    }
+
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_extrato)
+        configuraDAO()
         configuraToolBar()
         configuraDatePickerDialog()
         preencheDadosConta()
+        configuraRecyclerView()
+        //configuraListaTransacoes(conta.id)
 
-        val listaTransacoes: MutableList<Transacao> = configuraListaTransacoes()
-        configuraRecyclerView(listaTransacoes)
+        val listaTransacoes = transacaoDAO.all(conta.id) as MutableList
+        adapter.atualiza(listaTransacoes)
+
+//        Toast.makeText(this, novaConta.id.toString(), Toast.LENGTH_SHORT).show()
+    }
+
+    private fun configuraDAO() {
+        val database = GuiaBolsoDatabase.getInstance(this)
+        transacaoDAO = database.transacaoDAO()
     }
 
     private fun preencheDadosConta() {
-        val conta = intent.getSerializableExtra("conta") as Conta
+        conta = intent.getSerializableExtra("conta") as Conta
         extrato_textview_nome_titular.text = conta.nomeTitular
         extrato_textview_saldo_total.text = conta.saldo.formataMoedaParaBrasileiro()
         extrato_textview_nome_banco.text = conta.apelido
@@ -45,38 +67,29 @@ class ExtratoActivity : AppCompatActivity() {
         configuraCampoData(dataAte)
     }
 
-    private fun configuraRecyclerView(listaClientes: MutableList<Transacao>) {
+    private fun configuraRecyclerView() {
         val recyclerView = list_transacoes_recyclerview
-        recyclerView.adapter = ListTransacoesAdapter(listaClientes, this)
+        recyclerView.adapter = adapter
     }
 
-    private fun configuraListaTransacoes(): MutableList<Transacao> {
-        val listaClientes: MutableList<Transacao> = mutableListOf()
+    private fun configuraListaTransacoes(contaId : Long){
 
-        val mutableListOf = mutableListOf<Transacao>(
-            Transacao("Quitanta da Marcia", "18 NOV", "RS 15,99", TipoTransacao.Credito),
-            Transacao("Mercado X Loja 1", "18 NOV", "RS 15,99", TipoTransacao.Debito),
-            Transacao("Sergipe", "18 NOV", "RS 15,99", TipoTransacao.Credito),
-            Transacao("Alemão", "18 NOV", "RS 15,99", TipoTransacao.Debito),
-            Transacao("Quitanta da Marcia", "18 NOV", "RS 15,99", TipoTransacao.Credito),
-            Transacao("Mercado X Loja 1", "18 NOV", "RS 15,99", TipoTransacao.Debito),
-            Transacao("Sergipe", "18 NOV", "RS 15,99", TipoTransacao.Credito),
-            Transacao("Alemão", "18 NOV", "RS 15,99", TipoTransacao.Debito),
-            Transacao("Quitanta da Marcia", "18 NOV", "RS 15,99", TipoTransacao.Credito),
-            Transacao("Mercado X Loja 1", "18 NOV", "RS 15,99", TipoTransacao.Debito),
-            Transacao("Sergipe", "18 NOV", "RS 15,99", TipoTransacao.Credito),
-            Transacao("Alemão", "18 NOV", "RS 15,99", TipoTransacao.Debito),
-            Transacao("Quitanta da Marcia", "18 NOV", "RS 15,99", TipoTransacao.Credito),
-            Transacao("Mercado X Loja 1", "18 NOV", "RS 15,99", TipoTransacao.Debito),
-            Transacao("Sergipe", "18 NOV", "RS 15,99", TipoTransacao.Credito),
-            Transacao("Alemão", "18 NOV", "RS 15,99", TipoTransacao.Debito)
-
-
-
-        )
-
-        listaClientes.addAll(mutableListOf)
-        return listaClientes
+        transacaoDAO.add(Transacao("Quitanta da Marcia", "18 NOV", "RS 115,99", TipoTransacao.Credito, contaId))
+        transacaoDAO.add(Transacao("Mercado X Loja 1", "18 NOV", "RS 255,99", TipoTransacao.Debito, contaId))
+        transacaoDAO.add(Transacao("Sergipe", "18 NOV", "RS 15,99", TipoTransacao.Credito, contaId))
+        transacaoDAO.add(Transacao("Alemão", "18 NOV", "RS 15,99", TipoTransacao.Debito, contaId))
+        transacaoDAO.add(Transacao("Quitanta da Marcia", "18 NOV", "RS 17,99", TipoTransacao.Credito, contaId))
+        transacaoDAO.add(Transacao("Mercado X Loja 1", "18 NOV", "RS 195,99", TipoTransacao.Debito, contaId))
+        transacaoDAO.add(Transacao("Sergipe", "18 NOV", "RS 15,99", TipoTransacao.Credito, contaId))
+        transacaoDAO.add(Transacao("Alemão", "18 NOV", "RS 15,99", TipoTransacao.Debito, contaId))
+        transacaoDAO.add(Transacao("Quitanta da Marcia", "18 NOV", "RS 15,79", TipoTransacao.Credito, contaId))
+        transacaoDAO.add(Transacao("Mercado X Loja 1", "18 NOV", "RS 15,99", TipoTransacao.Debito, contaId))
+        transacaoDAO.add(Transacao("Sergipe", "18 NOV", "RS 15,23", TipoTransacao.Credito, contaId))
+        transacaoDAO.add(Transacao("Alemão", "18 NOV", "RS 15,93", TipoTransacao.Debito, contaId))
+        transacaoDAO.add(Transacao("Quitanta da Marcia", "18 NOV", "RS 515,12", TipoTransacao.Credito, contaId))
+        transacaoDAO.add(Transacao("Mercado X Loja 1", "18 NOV", "RS 15,99", TipoTransacao.Debito, contaId))
+        transacaoDAO.add(Transacao("Sergipe", "18 NOV", "RS 15,99", TipoTransacao.Credito, contaId))
+        transacaoDAO.add(Transacao("Alemão", "18 NOV", "RS 15,99", TipoTransacao.Debito, contaId))
     }
 
     private fun configuraToolBar() {

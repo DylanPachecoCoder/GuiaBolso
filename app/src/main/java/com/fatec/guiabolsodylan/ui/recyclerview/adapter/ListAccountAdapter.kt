@@ -14,7 +14,7 @@ import com.fatec.guiabolsodylan.model.Conta
 import kotlinx.android.synthetic.main.item_conta.view.*
 
 class ListAccountAdapter(
-    private var dao: ContaDAO,
+    //private var dao: ContaDAO,
     var listaContas: MutableList<Conta> = mutableListOf(),
     private val context: Context,
     var clickListener: (Conta) -> Unit = {}
@@ -45,6 +45,10 @@ class ListAccountAdapter(
 
     }
 
+    fun getConta(position: Int): Conta {
+        return listaContas[position]
+    }
+
     inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView),
         View.OnCreateContextMenuListener {
         override fun onCreateContextMenu(
@@ -52,21 +56,10 @@ class ListAccountAdapter(
             v: View?,
             menuInfo: ContextMenu.ContextMenuInfo?
         ) {
-            menu?.add(this.adapterPosition, v!!.id, 0, "Remover")?.setOnMenuItemClickListener {
-                val conta = listaContas[this.adapterPosition]
-                var alertDialog = AlertDialog.Builder(context)
-                alertDialog.setTitle("Remover")
-                alertDialog.setMessage("Deseja remover este cliente ?")
-                alertDialog.setPositiveButton("Sim") { _, _ ->
-                    dao.remove(conta)
-                    atualiza(dao.all())
-                    notifyDataSetChanged()
-                }
-                alertDialog.setNegativeButton("Não") { _, _ ->
-                }
-                alertDialog.show()
-                true
-            }
+            menu?.setHeaderTitle("Escolha uma ação: ")
+            menu?.add(0, v!!.id, adapterPosition, "Editar apelido")
+            menu?.add(1, v!!.id, adapterPosition, "Remover")
+
         }
 
         fun bindView(
