@@ -2,31 +2,20 @@ package com.fatec.guiabolsodylan.ui.activity
 
 import android.content.Intent
 import android.os.Bundle
-import android.text.Editable
 import android.view.LayoutInflater
 import android.view.MenuItem
 import android.view.View
 import android.widget.TextView
-import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import br.com.ajchagas.guiabolsobrq.ui.recyclerview.adapter.ListAccountAdapter
-import br.com.alura.technews.retrofit.webclient.BancoWebClient
 import com.fatec.guiabolsodylan.R
 import com.fatec.guiabolsodylan.database.GuiaBolsoDatabase
-import com.fatec.guiabolsodylan.database.asynctask.AtualizaContaTask
-import com.fatec.guiabolsodylan.database.asynctask.BuscaContasTask
-import com.fatec.guiabolsodylan.database.asynctask.RemoveContaTask
-import com.fatec.guiabolsodylan.database.asynctask.SomaSaldoTask
 import com.fatec.guiabolsodylan.database.asynctask.BaseAsyncTask
-import com.fatec.guiabolsodylan.database.asynctask.BuscaClientesTask
 import com.fatec.guiabolsodylan.database.dao.ContaDAO
 import com.fatec.guiabolsodylan.extension.formataMoedaParaBrasileiro
 import com.fatec.guiabolsodylan.model.Conta
-import kotlinx.android.synthetic.main.activity_cadastro.*
 import kotlinx.android.synthetic.main.activity_list_account.*
-import kotlinx.android.synthetic.main.edita_epelido.*
 import kotlinx.android.synthetic.main.edita_epelido.view.*
 import kotlinx.android.synthetic.main.recycler_view_list_account.*
 import java.math.BigDecimal
@@ -44,19 +33,9 @@ class ListAccountActivity : AppCompatActivity() {
         setContentView(R.layout.activity_list_account)
         configuraDAO()
         configuraRecyclerView()
-        //listaContasParaTeste()
         buscaContas()
         configuraFAB()
         somaSaldo()
-//        webclient.buscaTodas(
-//            quandoSucesso = { noticiasNovas ->
-//                noticiasNovas?.let {
-//                    Toast.makeText(this, it[0].toString(), Toast.LENGTH_SHORT).show()
-//                }
-//            }, quandoFalha = {
-//                Toast.makeText(this, it, Toast.LENGTH_SHORT).show()
-//            }
-//        )
     }
 
     override fun onResume() {
@@ -70,8 +49,8 @@ class ListAccountActivity : AppCompatActivity() {
             val listaContas = dao.all()
             var saldo = BigDecimal.ZERO
 
-            for(conta : Conta in listaContas){
-                saldo +=  conta.saldo
+            for (conta: Conta in listaContas) {
+                saldo += conta.saldo
             }
             saldo
         }, quandoFinaliza = { saldo ->
@@ -80,7 +59,11 @@ class ListAccountActivity : AppCompatActivity() {
     }
 
     private fun buscaContas() {
-        BuscaContasTask(dao, adapter).execute()
+        BaseAsyncTask(quandoExecuta = {
+            dao.all()
+        }, quandoFinaliza = { listaContas ->
+            adapter.atualiza(listaContas)
+        }).execute()
     }
 
 
@@ -100,73 +83,6 @@ class ListAccountActivity : AppCompatActivity() {
         val intent = Intent(this, ExtratoActivity::class.java)
         intent.putExtra("conta", contaClicada)
         startActivity(intent)
-    }
-
-    private fun listaContasParaTeste() {
-        dao.add(Conta(
-            nomeTitular = "Robson Leonel Medeiros",
-            apelido = "Itaú",
-            agencia = "1220",
-            numeroConta = "23177-5",
-            saldo = BigDecimal(1050.00)
-        ))
-        dao.add(Conta(
-            nomeTitular = "Robson Leonel Medeiros",
-            apelido = "Santander",
-            agencia = "1320",
-            numeroConta = "10000-5",
-            saldo = BigDecimal(3009.00)
-        ))
-        dao.add(Conta(
-            nomeTitular = "Robson Leonel Medeiros",
-            apelido = "Nubank",
-            agencia = "0001",
-            numeroConta = "10320-5",
-            saldo = BigDecimal(7000.23)
-        ))
-        dao.add(Conta(
-            nomeTitular = "Robson Leonel Medeiros",
-            apelido = "Itaú",
-            agencia = "1220",
-            numeroConta = "23177-5",
-            saldo = BigDecimal(1700.00)
-        ))
-        dao.add(Conta(
-            nomeTitular = "Robson Leonel Medeiros",
-            apelido = "Santander",
-            agencia = "1320",
-            numeroConta = "10000-5",
-            saldo = BigDecimal(3000.00)
-        ))
-        dao.add(Conta(
-            nomeTitular = "Robson Leonel Medeiros",
-            apelido = "Nubank",
-            agencia = "0001",
-            numeroConta = "10320-5",
-            saldo = BigDecimal(7000.00)
-        ))
-        dao.add(Conta(
-            nomeTitular = "Robson Leonel Medeiros",
-            apelido = "Itaú",
-            agencia = "1220",
-            numeroConta = "23177-5",
-            saldo = BigDecimal(1000.00)
-        ))
-        dao.add(Conta(
-            nomeTitular = "Robson Leonel Medeiros",
-            apelido = "Santander",
-            agencia = "1320",
-            numeroConta = "10000-5",
-            saldo = BigDecimal(3000.00)
-        ))
-        dao.add(Conta(
-            nomeTitular = "Robson Leonel Medeiros",
-            apelido = "Nubank",
-            agencia = "0001",
-            numeroConta = "10320-5",
-            saldo = BigDecimal(7000.00)
-        ))
-
     }
 
     private fun configuraFAB() {
@@ -206,13 +122,21 @@ class ListAccountActivity : AppCompatActivity() {
         alertDialog.setView(viewCriada)
         alertDialog.setPositiveButton("Alterar") { _, _ ->
             conta.apelido = campoEditaApelido.text.toString()
-            dao.update(conta)
-            //AtualizaContaTask(dao, adapter, conta)
+            editaApelido(conta)
             buscaContas()
         }
         alertDialog.setNegativeButton("Cancelar") { _, _ ->
         }
         alertDialog.show()
+    }
+
+    private fun editaApelido(conta: Conta) {
+        BaseAsyncTask(quandoExecuta = {
+            dao.update(conta)
+            dao.all()
+        }, quandoFinaliza = { listaContas ->
+            adapter.atualiza(listaContas)
+        }).execute()
     }
 
     private fun configuraCampoEditaApelido(conta: Conta): Pair<View, TextView> {
@@ -228,7 +152,7 @@ class ListAccountActivity : AppCompatActivity() {
         alertDialog.setTitle("Remover")
         alertDialog.setMessage("Deseja remover este cliente ?")
         alertDialog.setPositiveButton("Sim") { _, _ ->
-            RemoveContaTask(dao, conta, adapter).execute()
+            removeConta(conta)
             somaSaldo()
         }
         alertDialog.setNegativeButton("Não") { _, _ ->
@@ -236,10 +160,104 @@ class ListAccountActivity : AppCompatActivity() {
         alertDialog.show()
     }
 
+    private fun removeConta(conta: Conta) {
+        BaseAsyncTask(quandoExecuta = {
+            dao.remove(conta)
+            dao.all()
+        }, quandoFinaliza = { listaContas ->
+            adapter.atualiza(listaContas)
+        }).execute()
+    }
+
     private fun pegaContaSelecionada(item: MenuItem): Conta {
         val position = item.order
         val conta = adapter.getConta(position)
         return conta
+    }
+
+    private fun listaContasParaTeste() {
+        dao.add(
+            Conta(
+                nomeTitular = "Robson Leonel Medeiros",
+                apelido = "Itaú",
+                agencia = "1220",
+                numeroConta = "23177-5",
+                saldo = BigDecimal(1050.00)
+            )
+        )
+        dao.add(
+            Conta(
+                nomeTitular = "Robson Leonel Medeiros",
+                apelido = "Santander",
+                agencia = "1320",
+                numeroConta = "10000-5",
+                saldo = BigDecimal(3009.00)
+            )
+        )
+        dao.add(
+            Conta(
+                nomeTitular = "Robson Leonel Medeiros",
+                apelido = "Nubank",
+                agencia = "0001",
+                numeroConta = "10320-5",
+                saldo = BigDecimal(7000.23)
+            )
+        )
+        dao.add(
+            Conta(
+                nomeTitular = "Robson Leonel Medeiros",
+                apelido = "Itaú",
+                agencia = "1220",
+                numeroConta = "23177-5",
+                saldo = BigDecimal(1700.00)
+            )
+        )
+        dao.add(
+            Conta(
+                nomeTitular = "Robson Leonel Medeiros",
+                apelido = "Santander",
+                agencia = "1320",
+                numeroConta = "10000-5",
+                saldo = BigDecimal(3000.00)
+            )
+        )
+        dao.add(
+            Conta(
+                nomeTitular = "Robson Leonel Medeiros",
+                apelido = "Nubank",
+                agencia = "0001",
+                numeroConta = "10320-5",
+                saldo = BigDecimal(7000.00)
+            )
+        )
+        dao.add(
+            Conta(
+                nomeTitular = "Robson Leonel Medeiros",
+                apelido = "Itaú",
+                agencia = "1220",
+                numeroConta = "23177-5",
+                saldo = BigDecimal(1000.00)
+            )
+        )
+        dao.add(
+            Conta(
+                nomeTitular = "Robson Leonel Medeiros",
+                apelido = "Santander",
+                agencia = "1320",
+                numeroConta = "10000-5",
+                saldo = BigDecimal(3000.00)
+            )
+        )
+        dao.add(
+            Conta(
+                nomeTitular = "Robson Leonel Medeiros",
+                apelido = "Nubank",
+                agencia = "0001",
+                numeroConta = "10320-5",
+                saldo = BigDecimal(7000.00)
+            )
+        )
+
     }
 
 }

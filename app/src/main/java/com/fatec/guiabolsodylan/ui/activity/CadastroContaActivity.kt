@@ -2,28 +2,25 @@ package com.fatec.guiabolsodylan.ui.activity
 
 import android.os.Bundle
 import android.widget.ArrayAdapter
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import br.com.ajchagas.guiabolsobrq.validator.ValidacaoPadrao
 import com.fatec.guiabolsodylan.R
 import com.fatec.guiabolsodylan.database.GuiaBolsoDatabase
-import com.fatec.guiabolsodylan.database.asynctask.SalvaContaTask
+import com.fatec.guiabolsodylan.database.asynctask.BaseAsyncTask
 import com.fatec.guiabolsodylan.database.dao.ContaDAO
-import com.fatec.guiabolsodylan.database.dao.TransacaoDAO
 import com.fatec.guiabolsodylan.model.Conta
-import com.fatec.guiabolsodylan.model.TipoTransacao
-import com.fatec.guiabolsodylan.model.Transacao
 import com.google.android.material.textfield.TextInputLayout
 import kotlinx.android.synthetic.main.activity_cadastro.*
-import kotlinx.android.synthetic.main.toolbar.*
+import kotlinx.android.synthetic.main.toolbar.colappsingtoolbar
+import kotlinx.android.synthetic.main.toolbar.toolbarid2
 import java.math.BigDecimal
 
 
 class CadastroContaActivity : AppCompatActivity() {
 
-    private lateinit var contaDAO : ContaDAO
+    private lateinit var contaDAO: ContaDAO
 
-    private val validators : MutableList<ValidacaoPadrao> = mutableListOf()
+    private val validators: MutableList<ValidacaoPadrao> = mutableListOf()
     private val app_name = "Cadastro Conta"
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -35,7 +32,6 @@ class CadastroContaActivity : AppCompatActivity() {
         validaCamposPreenchido()
         configuraBotaoSalvar()
         configuraBotaoCancelar()
-
     }
 
 
@@ -66,13 +62,17 @@ class CadastroContaActivity : AppCompatActivity() {
         val agencia = cadastro_edit_text_agencia.text.toString()
         val conta = cadastro_edit_text_conta.text.toString()
         val novaConta = Conta(apelido, nomeTitular, agencia, conta, BigDecimal(00.65))
-        SalvaContaTask(contaDAO, novaConta).execute()
+
+        BaseAsyncTask(quandoExecuta = {
+            contaDAO.add(novaConta)
+        }, quandoFinaliza = {}
+        ).execute()
     }
 
-    private fun validaTodosOsCampos() : Boolean{
+    private fun validaTodosOsCampos(): Boolean {
         var estaValido = true
-        for (validator in validators){
-            if(!validator.estaValido()){
+        for (validator in validators) {
+            if (!validator.estaValido()) {
                 estaValido = false
             }
         }
@@ -92,7 +92,7 @@ class CadastroContaActivity : AppCompatActivity() {
         validators.add(validacaoPadrao)
         editText?.setOnFocusChangeListener { _, hasFocus ->
             if (!hasFocus) {
-                    validacaoPadrao.estaValido()
+                validacaoPadrao.estaValido()
             }
         }
     }
@@ -104,7 +104,8 @@ class CadastroContaActivity : AppCompatActivity() {
             ArrayAdapter<String>(
                 this,
                 R.layout.support_simple_spinner_dropdown_item,
-                listBancos)
+                listBancos
+            )
     }
 
 
