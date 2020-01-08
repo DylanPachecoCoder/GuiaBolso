@@ -12,6 +12,7 @@ class Conta(
     val agencia: String,
     val numeroConta: String,
     val saldo: BigDecimal = BigDecimal.ZERO,
+    val idBanco : Int,
     @PrimaryKey(autoGenerate = true)
     var id : Long = 0
 ) : Serializable

@@ -12,7 +12,7 @@ import com.fatec.guiabolsodylan.database.dao.ContaDAO
 import com.fatec.guiabolsodylan.database.dao.TransacaoDAO
 import com.fatec.guiabolsodylan.model.Transacao
 
-@Database(entities = [Conta::class, Transacao::class], version = 3, exportSchema = false)
+@Database(entities = [Conta::class, Transacao::class], version = 4, exportSchema = false)
 @TypeConverters(*[BigDecimalConverter::class, TipoTransacaoConverter::class])
 abstract class GuiaBolsoDatabase : RoomDatabase() {
 

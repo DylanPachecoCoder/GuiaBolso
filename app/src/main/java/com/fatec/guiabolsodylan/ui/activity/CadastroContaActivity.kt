@@ -43,7 +43,7 @@ class CadastroContaActivity : AppCompatActivity() {
     }
 
     private fun buscaBancos() {
-        webclient.buscaTodas(
+        webclient.buscaContas(
             quandoSucesso = {
                 configuraSpinner(it!!.data)
             }, quandoFalha = {
@@ -77,13 +77,19 @@ class CadastroContaActivity : AppCompatActivity() {
     }
 
     private fun salvaConta() {
+        val bancoSelecionado = spinnerBancos.selectedItem as Data
         val apelido = cadastro_edit_text_apelido.text.toString()
         val nomeTitular = cadastro_edit_text_nome_titular.text.toString()
         val agencia = cadastro_edit_text_agencia.text.toString()
         val conta = cadastro_edit_text_conta.text.toString()
-        val novaConta = Conta(apelido, nomeTitular, agencia, conta, BigDecimal(00.65))
-
-        val bancoSelecionado = spinnerBancos.selectedItem as Data
+        val id = bancoSelecionado.id
+        val novaConta = Conta(
+            apelido = apelido,
+            nomeTitular = nomeTitular,
+            agencia = agencia,
+            numeroConta = conta,
+            saldo = BigDecimal(00.65),
+            idBanco = id)
 
         if(bancoSelecionado.agencia.toString() == novaConta.agencia &&
             bancoSelecionado.conta.toString() == novaConta.numeroConta){

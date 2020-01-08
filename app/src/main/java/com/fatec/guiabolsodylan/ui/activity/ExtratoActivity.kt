@@ -5,11 +5,13 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.EditText
 import android.widget.Toast
+import br.com.ajchagas.guiabolsobrq.model.listaExtratoApi.Data
 import com.fatec.guiabolsodylan.extension.formataParaBrasileiro
 import com.fatec.guiabolsodylan.model.Conta
 import com.fatec.guiabolsodylan.model.TipoTransacao
 import com.fatec.guiabolsodylan.model.Transacao
 import br.com.ajchagas.guiabolsobrq.ui.recyclerview.adapter.ListTransacoesAdapter
+import br.com.alura.technews.retrofit.webclient.BancoWebClient
 import com.fatec.guiabolsodylan.R
 import com.fatec.guiabolsodylan.database.GuiaBolsoDatabase
 import com.fatec.guiabolsodylan.database.dao.ContaDAO
@@ -23,9 +25,10 @@ import java.util.*
 class ExtratoActivity : AppCompatActivity() {
 
     private lateinit var conta: Conta
-    private lateinit var transacaoDAO : TransacaoDAO
+    private lateinit var transacaoDAO: TransacaoDAO
+    private val webClient: BancoWebClient = BancoWebClient()
 
-    private val adapter by lazy{
+    private val adapter by lazy {
         ListTransacoesAdapter(context = this)
     }
 
@@ -39,10 +42,19 @@ class ExtratoActivity : AppCompatActivity() {
         preencheDadosConta()
         configuraRecyclerView()
         //configuraListaTransacoes(conta.id)
+        webClient.buscaExtrato(
+            conta.idBanco,
+            "20191111",
+            "20191113",
+            quandoSucesso = {
+                adapter.atualiza(it!!.data)
+            }, quandoFalha = {
+                Toast.makeText(this, it, Toast.LENGTH_SHORT).show()
+            })
 
-        val listaTransacoes = transacaoDAO.all(conta.id) as MutableList
-        adapter.atualiza(listaTransacoes)
 
+//        val listaTransacoes = transacaoDAO.all(conta.id) as MutableList
+//        adapter.atualiza(listaTransacoes)
 //        Toast.makeText(this, novaConta.id.toString(), Toast.LENGTH_SHORT).show()
     }
 
@@ -72,22 +84,86 @@ class ExtratoActivity : AppCompatActivity() {
         recyclerView.adapter = adapter
     }
 
-    private fun configuraListaTransacoes(contaId : Long){
+    private fun configuraListaTransacoes(contaId: Long) {
 
-        transacaoDAO.add(Transacao("Quitanta da Marcia", "18 NOV", "RS 115,99", TipoTransacao.Credito, contaId))
-        transacaoDAO.add(Transacao("Mercado X Loja 1", "18 NOV", "RS 255,99", TipoTransacao.Debito, contaId))
+        transacaoDAO.add(
+            Transacao(
+                "Quitanta da Marcia",
+                "18 NOV",
+                "RS 115,99",
+                TipoTransacao.Credito,
+                contaId
+            )
+        )
+        transacaoDAO.add(
+            Transacao(
+                "Mercado X Loja 1",
+                "18 NOV",
+                "RS 255,99",
+                TipoTransacao.Debito,
+                contaId
+            )
+        )
         transacaoDAO.add(Transacao("Sergipe", "18 NOV", "RS 15,99", TipoTransacao.Credito, contaId))
         transacaoDAO.add(Transacao("Alemão", "18 NOV", "RS 15,99", TipoTransacao.Debito, contaId))
-        transacaoDAO.add(Transacao("Quitanta da Marcia", "18 NOV", "RS 17,99", TipoTransacao.Credito, contaId))
-        transacaoDAO.add(Transacao("Mercado X Loja 1", "18 NOV", "RS 195,99", TipoTransacao.Debito, contaId))
+        transacaoDAO.add(
+            Transacao(
+                "Quitanta da Marcia",
+                "18 NOV",
+                "RS 17,99",
+                TipoTransacao.Credito,
+                contaId
+            )
+        )
+        transacaoDAO.add(
+            Transacao(
+                "Mercado X Loja 1",
+                "18 NOV",
+                "RS 195,99",
+                TipoTransacao.Debito,
+                contaId
+            )
+        )
         transacaoDAO.add(Transacao("Sergipe", "18 NOV", "RS 15,99", TipoTransacao.Credito, contaId))
         transacaoDAO.add(Transacao("Alemão", "18 NOV", "RS 15,99", TipoTransacao.Debito, contaId))
-        transacaoDAO.add(Transacao("Quitanta da Marcia", "18 NOV", "RS 15,79", TipoTransacao.Credito, contaId))
-        transacaoDAO.add(Transacao("Mercado X Loja 1", "18 NOV", "RS 15,99", TipoTransacao.Debito, contaId))
+        transacaoDAO.add(
+            Transacao(
+                "Quitanta da Marcia",
+                "18 NOV",
+                "RS 15,79",
+                TipoTransacao.Credito,
+                contaId
+            )
+        )
+        transacaoDAO.add(
+            Transacao(
+                "Mercado X Loja 1",
+                "18 NOV",
+                "RS 15,99",
+                TipoTransacao.Debito,
+                contaId
+            )
+        )
         transacaoDAO.add(Transacao("Sergipe", "18 NOV", "RS 15,23", TipoTransacao.Credito, contaId))
         transacaoDAO.add(Transacao("Alemão", "18 NOV", "RS 15,93", TipoTransacao.Debito, contaId))
-        transacaoDAO.add(Transacao("Quitanta da Marcia", "18 NOV", "RS 515,12", TipoTransacao.Credito, contaId))
-        transacaoDAO.add(Transacao("Mercado X Loja 1", "18 NOV", "RS 15,99", TipoTransacao.Debito, contaId))
+        transacaoDAO.add(
+            Transacao(
+                "Quitanta da Marcia",
+                "18 NOV",
+                "RS 515,12",
+                TipoTransacao.Credito,
+                contaId
+            )
+        )
+        transacaoDAO.add(
+            Transacao(
+                "Mercado X Loja 1",
+                "18 NOV",
+                "RS 15,99",
+                TipoTransacao.Debito,
+                contaId
+            )
+        )
         transacaoDAO.add(Transacao("Sergipe", "18 NOV", "RS 15,99", TipoTransacao.Credito, contaId))
         transacaoDAO.add(Transacao("Alemão", "18 NOV", "RS 15,99", TipoTransacao.Debito, contaId))
     }
@@ -104,7 +180,7 @@ class ExtratoActivity : AppCompatActivity() {
         return true
     }
 
-    private fun configuraCampoData(campoData : EditText) {
+    private fun configuraCampoData(campoData: EditText) {
         val hoje = Calendar.getInstance()
 
         val ano = hoje.get(Calendar.YEAR)

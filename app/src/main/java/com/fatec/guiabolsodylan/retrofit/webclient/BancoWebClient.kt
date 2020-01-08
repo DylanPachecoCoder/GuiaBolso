@@ -1,5 +1,6 @@
 package br.com.alura.technews.retrofit.webclient
 
+import br.com.ajchagas.guiabolsobrq.model.listaExtratoApi.Extrato
 import br.com.alura.technews.retrofit.AppRetrofit
 import com.fatec.guiabolsodylan.model.listaBancoApi.Banco
 import com.fatec.guiabolsodylan.retrofit.service.BancoService
@@ -33,8 +34,22 @@ class BancoWebClient(
         })
     }
 
-    fun buscaTodas(
-        quandoSucesso: (noticiasNovas: Banco?) -> Unit,
+    fun buscaExtrato(
+        contaId: Int,
+        dataDe: String,
+        dataAte: String,
+        quandoSucesso: (transacoes: Extrato?) -> Unit,
+        quandoFalha: (erro: String?) -> Unit
+    ) {
+        executaRequisicao(
+            service.buscaExtrato(contaId, dataAtual = dataAte, ultimos30Dias = dataDe),
+            quandoSucesso,
+            quandoFalha
+        )
+    }
+
+    fun buscaContas(
+        quandoSucesso: (contas: Banco?) -> Unit,
         quandoFalha: (erro: String?) -> Unit
     ) {
         executaRequisicao(
