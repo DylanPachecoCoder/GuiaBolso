@@ -1,7 +1,7 @@
 package br.com.alura.technews.retrofit.webclient
 
 import br.com.alura.technews.retrofit.AppRetrofit
-import com.fatec.guiabolsodylan.model.Banco
+import com.fatec.guiabolsodylan.model.listaBancoApi.Banco
 import com.fatec.guiabolsodylan.retrofit.service.BancoService
 import retrofit2.Call
 import retrofit2.Callback
@@ -34,7 +34,7 @@ class BancoWebClient(
     }
 
     fun buscaTodas(
-        quandoSucesso: (noticiasNovas: List<Banco>?) -> Unit,
+        quandoSucesso: (noticiasNovas: Banco?) -> Unit,
         quandoFalha: (erro: String?) -> Unit
     ) {
         executaRequisicao(

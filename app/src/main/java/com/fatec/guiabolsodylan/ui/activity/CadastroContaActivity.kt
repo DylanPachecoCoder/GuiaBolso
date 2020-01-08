@@ -2,13 +2,17 @@ package com.fatec.guiabolsodylan.ui.activity
 
 import android.os.Bundle
 import android.widget.ArrayAdapter
+import android.widget.Spinner
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import br.com.ajchagas.guiabolsobrq.validator.ValidacaoPadrao
+import br.com.alura.technews.retrofit.webclient.BancoWebClient
 import com.fatec.guiabolsodylan.R
 import com.fatec.guiabolsodylan.database.GuiaBolsoDatabase
 import com.fatec.guiabolsodylan.database.asynctask.BaseAsyncTask
 import com.fatec.guiabolsodylan.database.dao.ContaDAO
 import com.fatec.guiabolsodylan.model.Conta
+import com.fatec.guiabolsodylan.model.listaBancoApi.Data
 import com.google.android.material.textfield.TextInputLayout
 import kotlinx.android.synthetic.main.activity_cadastro.*
 import kotlinx.android.synthetic.main.toolbar.colappsingtoolbar
@@ -19,19 +23,36 @@ import java.math.BigDecimal
 class CadastroContaActivity : AppCompatActivity() {
 
     private lateinit var contaDAO: ContaDAO
+    private lateinit var spinnerBancos: Spinner
 
     private val validators: MutableList<ValidacaoPadrao> = mutableListOf()
     private val app_name = "Cadastro Conta"
+    private val webclient: BancoWebClient = BancoWebClient()
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_cadastro)
+
+        buscaBancos()
         configuraDAO()
         configuraToolBar()
-        configuraSpinner()
         validaCamposPreenchido()
         configuraBotaoSalvar()
         configuraBotaoCancelar()
+    }
+
+    private fun buscaBancos() {
+        webclient.buscaTodas(
+            quandoSucesso = {
+                configuraSpinner(it!!.data)
+            }, quandoFalha = {
+                mostra("Falha")
+            })
+    }
+
+    private fun mostra(mensagem: String) {
+        Toast.makeText(this, mensagem, Toast.LENGTH_SHORT).show()
     }
 
 
@@ -51,7 +72,6 @@ class CadastroContaActivity : AppCompatActivity() {
 
             if (validaTodosOsCampos()) {
                 salvaConta()
-                finish()
             }
         }
     }
@@ -63,6 +83,18 @@ class CadastroContaActivity : AppCompatActivity() {
         val conta = cadastro_edit_text_conta.text.toString()
         val novaConta = Conta(apelido, nomeTitular, agencia, conta, BigDecimal(00.65))
 
+        val bancoSelecionado = spinnerBancos.selectedItem as Data
+
+        if(bancoSelecionado.agencia.toString() == novaConta.agencia &&
+            bancoSelecionado.conta.toString() == novaConta.numeroConta){
+            salvaConta(novaConta)
+            finish()
+        }else{
+            mostra("Conta e/ou agência incorreto")
+        }
+    }
+
+    private fun salvaConta(novaConta: Conta) {
         BaseAsyncTask(quandoExecuta = {
             contaDAO.add(novaConta)
         }, quandoFinaliza = {}
@@ -97,17 +129,15 @@ class CadastroContaActivity : AppCompatActivity() {
         }
     }
 
-    private fun configuraSpinner() {
-        val spinnerBancos = cadastro_spinner_bancos
-        val listBancos = spinnerBancos.resources.getStringArray(R.array.lista_bancos)
+    private fun configuraSpinner(listaBancos: List<Data>) {
+        spinnerBancos = cadastro_spinner_bancos
         spinnerBancos.adapter =
-            ArrayAdapter<String>(
+            ArrayAdapter(
                 this,
                 R.layout.support_simple_spinner_dropdown_item,
-                listBancos
+                listaBancos
             )
     }
-
 
     private fun configuraToolBar() {
         val toolbarid = toolbarid2
