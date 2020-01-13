@@ -20,6 +20,7 @@ abstract class GuiaBolsoDatabase : RoomDatabase() {
     abstract fun transacaoDAO(): TransacaoDAO
 
     companion object{
+
         fun getInstance(context: Context) : GuiaBolsoDatabase {
             return Room.databaseBuilder(
                 context,

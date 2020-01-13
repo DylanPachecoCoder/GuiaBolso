@@ -8,13 +8,17 @@ import android.view.View
 import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.ViewModelProviders
 import br.com.ajchagas.guiabolsobrq.ui.recyclerview.adapter.ListAccountAdapter
+import br.com.alura.technews.retrofit.AppRetrofit
 import com.fatec.guiabolsodylan.R
 import com.fatec.guiabolsodylan.database.GuiaBolsoDatabase
 import com.fatec.guiabolsodylan.database.asynctask.BaseAsyncTask
 import com.fatec.guiabolsodylan.database.dao.ContaDAO
 import com.fatec.guiabolsodylan.extension.formataMoedaParaBrasileiro
 import com.fatec.guiabolsodylan.model.Conta
+import com.fatec.guiabolsodylan.repository.Repository
+import com.fatec.guiabolsodylan.ui.viewmodel.ListaContasActivityViewModel
 import kotlinx.android.synthetic.main.activity_list_account.*
 import kotlinx.android.synthetic.main.edita_epelido.view.*
 import kotlinx.android.synthetic.main.recycler_view_list_account.*
@@ -26,6 +30,12 @@ class ListAccountActivity : AppCompatActivity() {
 
     private val adapter by lazy {
         ListAccountAdapter(context = this)
+    }
+
+    private val viewModel by lazy {
+        //val repository = Repository(AppDatabase)
+        val provedor = ViewModelProviders.of(this)
+        provedor.get(ListaContasActivityViewModel::class.java)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -66,11 +76,9 @@ class ListAccountActivity : AppCompatActivity() {
         }).execute()
     }
 
-
     private fun configuraRecyclerView() {
         adapter.clickListener = this::abreExtratoActivity
         list_account_recyclerview.adapter = adapter
-
         registerForContextMenu(list_account_recyclerview)
     }
 
@@ -174,90 +182,4 @@ class ListAccountActivity : AppCompatActivity() {
         val conta = adapter.getConta(position)
         return conta
     }
-
-//    private fun listaContasParaTeste() {
-//        dao.add(
-//            Conta(
-//                nomeTitular = "Robson Leonel Medeiros",
-//                apelido = "Itaú",
-//                agencia = "1220",
-//                numeroConta = "23177-5",
-//                saldo = BigDecimal(1050.00)
-//            )
-//        )
-//        dao.add(
-//            Conta(
-//                nomeTitular = "Robson Leonel Medeiros",
-//                apelido = "Santander",
-//                agencia = "1320",
-//                numeroConta = "10000-5",
-//                saldo = BigDecimal(3009.00)
-//            )
-//        )
-//        dao.add(
-//            Conta(
-//                nomeTitular = "Robson Leonel Medeiros",
-//                apelido = "Nubank",
-//                agencia = "0001",
-//                numeroConta = "10320-5",
-//                saldo = BigDecimal(7000.23)
-//            )
-//        )
-//        dao.add(
-//            Conta(
-//                nomeTitular = "Robson Leonel Medeiros",
-//                apelido = "Itaú",
-//                agencia = "1220",
-//                numeroConta = "23177-5",
-//                saldo = BigDecimal(1700.00)
-//            )
-//        )
-//        dao.add(
-//            Conta(
-//                nomeTitular = "Robson Leonel Medeiros",
-//                apelido = "Santander",
-//                agencia = "1320",
-//                numeroConta = "10000-5",
-//                saldo = BigDecimal(3000.00)
-//            )
-//        )
-//        dao.add(
-//            Conta(
-//                nomeTitular = "Robson Leonel Medeiros",
-//                apelido = "Nubank",
-//                agencia = "0001",
-//                numeroConta = "10320-5",
-//                saldo = BigDecimal(7000.00)
-//            )
-//        )
-//        dao.add(
-//            Conta(
-//                nomeTitular = "Robson Leonel Medeiros",
-//                apelido = "Itaú",
-//                agencia = "1220",
-//                numeroConta = "23177-5",
-//                saldo = BigDecimal(1000.00)
-//            )
-//        )
-//        dao.add(
-//            Conta(
-//                nomeTitular = "Robson Leonel Medeiros",
-//                apelido = "Santander",
-//                agencia = "1320",
-//                numeroConta = "10000-5",
-//                saldo = BigDecimal(3000.00)
-//            )
-//        )
-//        dao.add(
-//            Conta(
-//                nomeTitular = "Robson Leonel Medeiros",
-//                apelido = "Nubank",
-//                agencia = "0001",
-//                numeroConta = "10320-5",
-//                saldo = BigDecimal(7000.00)
-//            )
-//        )
-//
-//    }
-
 }
