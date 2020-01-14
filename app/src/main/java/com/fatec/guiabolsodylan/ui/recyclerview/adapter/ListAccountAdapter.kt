@@ -14,7 +14,6 @@ import com.fatec.guiabolsodylan.model.Conta
 import kotlinx.android.synthetic.main.item_conta.view.*
 
 class ListAccountAdapter(
-    //private var dao: ContaDAO,
     var listaContas: MutableList<Conta> = mutableListOf(),
     private val context: Context,
     var clickListener: (Conta) -> Unit = {}

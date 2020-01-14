@@ -1,5 +1,6 @@
 package com.fatec.guiabolsodylan.ui.activity
 
+import android.app.Dialog
 import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -8,9 +9,9 @@ import android.view.View
 import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import br.com.ajchagas.guiabolsobrq.ui.recyclerview.adapter.ListAccountAdapter
-import br.com.alura.technews.retrofit.AppRetrofit
 import com.fatec.guiabolsodylan.R
 import com.fatec.guiabolsodylan.database.GuiaBolsoDatabase
 import com.fatec.guiabolsodylan.database.asynctask.BaseAsyncTask
@@ -18,7 +19,10 @@ import com.fatec.guiabolsodylan.database.dao.ContaDAO
 import com.fatec.guiabolsodylan.extension.formataMoedaParaBrasileiro
 import com.fatec.guiabolsodylan.model.Conta
 import com.fatec.guiabolsodylan.repository.Repository
+import com.fatec.guiabolsodylan.ui.activity.extensions.mostraErro
+import com.fatec.guiabolsodylan.ui.dialog.DialogListaContasActivity
 import com.fatec.guiabolsodylan.ui.viewmodel.ListaContasActivityViewModel
+import com.fatec.guiabolsodylan.ui.viewmodel.factory.ListaContasViewModelFactory
 import kotlinx.android.synthetic.main.activity_list_account.*
 import kotlinx.android.synthetic.main.edita_epelido.view.*
 import kotlinx.android.synthetic.main.recycler_view_list_account.*
@@ -32,59 +36,44 @@ class ListAccountActivity : AppCompatActivity() {
         ListAccountAdapter(context = this)
     }
 
+    private val dialog by lazy {
+        DialogListaContasActivity(context = this, viewModel = viewModel)
+    }
+
     private val viewModel by lazy {
-        //val repository = Repository(AppDatabase)
-        val provedor = ViewModelProviders.of(this)
+        val repository = Repository(GuiaBolsoDatabase.getInstance(this).contaDAO)
+        val factory = ListaContasViewModelFactory(repository)
+        val provedor = ViewModelProviders.of(this, factory)
         provedor.get(ListaContasActivityViewModel::class.java)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_list_account)
-        configuraDAO()
         configuraRecyclerView()
         buscaContas()
         configuraFAB()
-        somaSaldo()
-    }
-
-    override fun onResume() {
-        super.onResume()
-        buscaContas()
-        somaSaldo()
-    }
-
-    private fun somaSaldo() {
-        BaseAsyncTask(quandoExecuta = {
-            val listaContas = dao.all()
-            var saldo = BigDecimal.ZERO
-
-            for (conta: Conta in listaContas) {
-                saldo += conta.saldo
-            }
-            saldo
-        }, quandoFinaliza = { saldo ->
-            item_saldo_total_valor.text = saldo.formataMoedaParaBrasileiro()
-        }).execute()
     }
 
     private fun buscaContas() {
-        BaseAsyncTask(quandoExecuta = {
-            dao.all()
-        }, quandoFinaliza = { listaContas ->
-            adapter.atualiza(listaContas)
-        }).execute()
+        viewModel.buscaContas().observe(this, Observer { resource ->
+            resource.dado?.let {
+                adapter.atualiza(it)
+                preencheSaldo(it)
+            }
+            resource.erro?.let { mostraErro(it) }
+        })
+    }
+
+    private fun preencheSaldo(it: List<Conta>) {
+        val saldo = viewModel.somaSaldo(it)
+        item_saldo_total_valor.text = saldo.formataMoedaParaBrasileiro()
     }
 
     private fun configuraRecyclerView() {
         adapter.clickListener = this::abreExtratoActivity
         list_account_recyclerview.adapter = adapter
         registerForContextMenu(list_account_recyclerview)
-    }
-
-    private fun configuraDAO() {
-        val database = GuiaBolsoDatabase.getInstance(this)
-        dao = database.contaDAO()
     }
 
     private fun abreExtratoActivity(contaClicada: Conta) {
@@ -94,7 +83,7 @@ class ListAccountActivity : AppCompatActivity() {
     }
 
     private fun configuraFAB() {
-        fab.setOnClickListener { view ->
+        fab.setOnClickListener {
             abreActivityCadastroConta()
         }
     }
@@ -105,81 +94,8 @@ class ListAccountActivity : AppCompatActivity() {
     }
 
     override fun onContextItemSelected(item: MenuItem): Boolean {
-
-        val conta = pegaContaSelecionada(item)
-        if (item.groupId == 0) {
-            configuraDialogEditaApelido(conta)
-        } else if (item.groupId == 1) {
-            criaDialogRemoverConta(conta)
-        }
+        val conta = viewModel.pegaContaSelecionada(item, adapter)
+        dialog.configuraContextMenuDialog(item, conta)
         return super.onContextItemSelected(item)
-    }
-
-    private fun configuraDialogEditaApelido(conta: Conta) {
-        val (viewCriada, campoEditaApelido: TextView) = configuraCampoEditaApelido(conta)
-        configuraDialog(viewCriada, conta, campoEditaApelido)
-    }
-
-    private fun configuraDialog(
-        viewCriada: View,
-        conta: Conta,
-        campoEditaApelido: TextView
-    ) {
-        val alertDialog = AlertDialog.Builder(this)
-        alertDialog.setTitle("Editar apelido")
-        alertDialog.setView(viewCriada)
-        alertDialog.setPositiveButton("Alterar") { _, _ ->
-            conta.apelido = campoEditaApelido.text.toString()
-            editaApelido(conta)
-            buscaContas()
-        }
-        alertDialog.setNegativeButton("Cancelar") { _, _ ->
-        }
-        alertDialog.show()
-    }
-
-    private fun editaApelido(conta: Conta) {
-        BaseAsyncTask(quandoExecuta = {
-            dao.update(conta)
-            dao.all()
-        }, quandoFinaliza = { listaContas ->
-            adapter.atualiza(listaContas)
-        }).execute()
-    }
-
-    private fun configuraCampoEditaApelido(conta: Conta): Pair<View, TextView> {
-        val viewCriada = LayoutInflater.from(this)
-            .inflate(R.layout.edita_epelido, null, false)
-        val campoEditaApelido: TextView = viewCriada.campo_edita_apelido
-        campoEditaApelido.text = conta.apelido
-        return Pair(viewCriada, campoEditaApelido)
-    }
-
-    private fun criaDialogRemoverConta(conta: Conta) {
-        val alertDialog = AlertDialog.Builder(this)
-        alertDialog.setTitle("Remover")
-        alertDialog.setMessage("Deseja remover este cliente ?")
-        alertDialog.setPositiveButton("Sim") { _, _ ->
-            removeConta(conta)
-            somaSaldo()
-        }
-        alertDialog.setNegativeButton("Não") { _, _ ->
-        }
-        alertDialog.show()
-    }
-
-    private fun removeConta(conta: Conta) {
-        BaseAsyncTask(quandoExecuta = {
-            dao.remove(conta)
-            dao.all()
-        }, quandoFinaliza = { listaContas ->
-            adapter.atualiza(listaContas)
-        }).execute()
-    }
-
-    private fun pegaContaSelecionada(item: MenuItem): Conta {
-        val position = item.order
-        val conta = adapter.getConta(position)
-        return conta
     }
 }

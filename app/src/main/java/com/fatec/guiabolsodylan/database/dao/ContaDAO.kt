@@ -1,5 +1,6 @@
 package com.fatec.guiabolsodylan.database.dao
 
+import androidx.lifecycle.LiveData
 import androidx.room.Dao
 import androidx.room.Delete
 import androidx.room.Insert
@@ -11,10 +12,13 @@ import com.fatec.guiabolsodylan.model.Conta
 interface ContaDAO {
 
     @Query("SELECT * FROM conta")
-    fun  all(): List<Conta>
+    fun all(): LiveData<List<Conta>>
+
+    @Query("SELECT * FROM conta")
+    fun busca(): List<Conta>
 
     @Query("SELECT * FROM conta WHERE id = :contaId")
-    fun  findById(contaId : Long): Conta
+    fun buscaPorId(contaId : Long) : LiveData<Conta>
 
     @Insert
     fun add(vararg conta: Conta)

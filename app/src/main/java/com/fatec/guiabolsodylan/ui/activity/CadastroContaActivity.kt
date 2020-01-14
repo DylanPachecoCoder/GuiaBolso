@@ -58,7 +58,7 @@ class CadastroContaActivity : AppCompatActivity() {
 
     private fun configuraDAO() {
         val database = GuiaBolsoDatabase.getInstance(this)
-        contaDAO = database.contaDAO()
+        contaDAO = database.contaDAO
     }
 
     private fun configuraBotaoCancelar() {

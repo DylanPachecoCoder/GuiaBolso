@@ -53,7 +53,7 @@ class ExtratoActivity : AppCompatActivity() {
 
     private fun configuraDAO() {
         val database = GuiaBolsoDatabase.getInstance(this)
-        transacaoDAO = database.transacaoDAO()
+        transacaoDAO = database.transacaoDAO
     }
 
     private fun preencheDadosConta() {

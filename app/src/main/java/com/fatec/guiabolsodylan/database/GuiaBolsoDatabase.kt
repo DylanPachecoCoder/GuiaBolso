@@ -16,20 +16,25 @@ import com.fatec.guiabolsodylan.model.Transacao
 @TypeConverters(*[BigDecimalConverter::class, TipoTransacaoConverter::class])
 abstract class GuiaBolsoDatabase : RoomDatabase() {
 
-    abstract fun contaDAO(): ContaDAO
-    abstract fun transacaoDAO(): TransacaoDAO
+    abstract val contaDAO: ContaDAO
+    abstract val transacaoDAO: TransacaoDAO
 
-    companion object{
+    companion object {
 
-        fun getInstance(context: Context) : GuiaBolsoDatabase {
-            return Room.databaseBuilder(
+        private lateinit var db: GuiaBolsoDatabase
+
+        fun getInstance(context: Context): GuiaBolsoDatabase {
+
+            if (::db.isInitialized) return db
+
+            db = Room.databaseBuilder(
                 context,
                 GuiaBolsoDatabase::class.java,
                 "guiaBolso.db"
             )
-                .allowMainThreadQueries()
                 .fallbackToDestructiveMigration()
                 .build()
+            return db
         }
     }
 }
