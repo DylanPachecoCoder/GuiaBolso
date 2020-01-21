@@ -1,4 +1,4 @@
-package br.com.ajchagas.guiabolsobrq.model.listaExtratoApi
+package com.fatec.guiabolsodylan.model.listaExtratoApi
 
 import com.google.gson.annotations.SerializedName
 

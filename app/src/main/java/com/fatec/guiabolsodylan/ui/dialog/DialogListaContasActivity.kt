@@ -14,10 +14,9 @@ class DialogListaContasActivity(
 ) {
 
     fun configuraContextMenuDialog(item: MenuItem, conta: Conta) {
-        if (item.groupId == 0) {
-            configuraDialogEditaApelido(conta)
-        } else if (item.groupId == 1) {
-            criaDialogRemoverConta(conta, context)
+        when (item.groupId) {
+            0 -> configuraDialogEditaApelido(conta)
+            1 -> criaDialogRemoverConta(conta, context)
         }
     }
 
@@ -44,15 +43,30 @@ class DialogListaContasActivity(
         campoEditaApelido: TextView
     ) {
         val alertDialog = AlertDialog.Builder(context)
-        alertDialog.setTitle("Editar apelido")
-        alertDialog.setView(viewCriada)
-        alertDialog.setPositiveButton("Alterar") { _, _ ->
-            conta.apelido = campoEditaApelido.text.toString()
-            viewModel.editaApelido(conta)
-            viewModel.buscaContas()
+
+        with(alertDialog){
+
+            setTitle("Editar apelido")
+            setView(viewCriada)
+            setPositiveButton("Alterar") { _, _ ->
+                conta.apelido = campoEditaApelido.text.toString()
+                viewModel.editaApelido(conta)
+                viewModel.buscaContas()
+            }
+            setNegativeButton("Cancelar") { _, _ ->
+            }
+            show()
         }
-        alertDialog.setNegativeButton("Cancelar") { _, _ ->
-        }
-        alertDialog.show()
+
+//        alertDialog.setTitle("Editar apelido")
+//        alertDialog.setView(viewCriada)
+//        alertDialog.setPositiveButton("Alterar") { _, _ ->
+//            conta.apelido = campoEditaApelido.text.toString()
+//            viewModel.editaApelido(conta)
+//            viewModel.buscaContas()
+//        }
+//        alertDialog.setNegativeButton("Cancelar") { _, _ ->
+//        }
+//        alertDialog.show()
     }
 }

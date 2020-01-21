@@ -1,10 +1,8 @@
-package br.com.ajchagas.guiabolsobrq.model.listaExtratoApi
+package com.fatec.guiabolsodylan.model.listaExtratoApi
 
 import com.google.gson.annotations.SerializedName
 import java.io.Serializable
 import java.math.BigDecimal
-import java.util.*
-
 
 data class Data(
     @SerializedName("id") val id: Int,
@@ -15,5 +13,4 @@ data class Data(
     @SerializedName("data_alteracao") val data_alteracao : String,
     @SerializedName("data_criacao") val data_criacao : String,
     @SerializedName("hora_criacao") val hora_criacao : String
-
     ) :Serializable

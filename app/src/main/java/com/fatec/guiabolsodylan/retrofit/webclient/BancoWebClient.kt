@@ -1,6 +1,6 @@
 package br.com.alura.technews.retrofit.webclient
 
-import br.com.ajchagas.guiabolsobrq.model.listaExtratoApi.Extrato
+import com.fatec.guiabolsodylan.model.listaExtratoApi.Extrato
 import br.com.alura.technews.retrofit.AppRetrofit
 import com.fatec.guiabolsodylan.model.listaBancoApi.Banco
 import com.fatec.guiabolsodylan.retrofit.service.BancoService

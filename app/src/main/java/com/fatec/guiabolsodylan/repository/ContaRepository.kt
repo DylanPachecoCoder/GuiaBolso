@@ -3,13 +3,13 @@ package com.fatec.guiabolsodylan.repository
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MediatorLiveData
 import br.com.alura.technews.retrofit.webclient.BancoWebClient
+import com.fatec.guiabolsodylan.database.GuiaBolsoDatabase
 import com.fatec.guiabolsodylan.database.asynctask.BaseAsyncTask
 import com.fatec.guiabolsodylan.database.dao.ContaDAO
 import com.fatec.guiabolsodylan.model.Conta
 
-class Repository(
-    private val dao: ContaDAO,
-    private val webClient: BancoWebClient = BancoWebClient()
+class ContaRepository(
+    private val dao: ContaDAO
 ) {
 
     private val mediador = MediatorLiveData<Resource<List<Conta>?>>()

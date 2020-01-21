@@ -1,6 +1,6 @@
 package com.fatec.guiabolsodylan.retrofit.service
 
-import br.com.ajchagas.guiabolsobrq.model.listaExtratoApi.Extrato
+import com.fatec.guiabolsodylan.model.listaExtratoApi.Extrato
 import com.fatec.guiabolsodylan.model.listaBancoApi.Banco
 import retrofit2.Call
 import retrofit2.http.GET

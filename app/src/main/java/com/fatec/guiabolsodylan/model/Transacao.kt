@@ -11,7 +11,6 @@ class Transacao(
     val data: String,
     val valor: String,
     val tipo: TipoTransacao,
-
     @ForeignKey(entity = Conta::class,
         parentColumns = ["id"],
         childColumns = ["contaId"],
@@ -22,6 +21,4 @@ class Transacao(
 
     @PrimaryKey(autoGenerate = true)
     var id: Long = 0
-
-
 ) : Serializable

@@ -1,22 +1,17 @@
 package com.fatec.guiabolsodylan.ui.activity
 
 import android.app.DatePickerDialog
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.EditText
-import android.widget.Toast
-import br.com.ajchagas.guiabolsobrq.model.listaExtratoApi.Data
+import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.ViewModelProviders
+import com.fatec.guiabolsodylan.ui.recyclerview.adapter.ListTransacoesAdapter
+import com.fatec.guiabolsodylan.R
+import com.fatec.guiabolsodylan.extension.formataMoedaParaBrasileiro
 import com.fatec.guiabolsodylan.extension.formataParaBrasileiro
 import com.fatec.guiabolsodylan.model.Conta
-import com.fatec.guiabolsodylan.model.TipoTransacao
-import com.fatec.guiabolsodylan.model.Transacao
-import br.com.ajchagas.guiabolsobrq.ui.recyclerview.adapter.ListTransacoesAdapter
-import br.com.alura.technews.retrofit.webclient.BancoWebClient
-import com.fatec.guiabolsodylan.R
-import com.fatec.guiabolsodylan.database.GuiaBolsoDatabase
-import com.fatec.guiabolsodylan.database.dao.ContaDAO
-import com.fatec.guiabolsodylan.database.dao.TransacaoDAO
-import com.fatec.guiabolsodylan.extension.formataMoedaParaBrasileiro
+import com.fatec.guiabolsodylan.ui.viewmodel.ExtratoActivityViewModel
+import com.fatec.guiabolsodylan.ui.viewmodel.factory.ExtratoViewModelFactory
 import kotlinx.android.synthetic.main.activity_extrato.*
 import kotlinx.android.synthetic.main.recyclerview_list_transacoes.*
 import kotlinx.android.synthetic.main.toolbar.*
@@ -25,36 +20,52 @@ import java.util.*
 class ExtratoActivity : AppCompatActivity() {
 
     private lateinit var conta: Conta
-    private lateinit var transacaoDAO: TransacaoDAO
-    private val webClient: BancoWebClient = BancoWebClient()
-
     private val adapter by lazy {
         ListTransacoesAdapter(context = this)
+    }
+
+    private val viewModel by lazy {
+        val factory = ExtratoViewModelFactory(this)
+        val provedor = ViewModelProviders.of(this, factory)
+        provedor.get(ExtratoActivityViewModel::class.java)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_extrato)
-        configuraDAO()
+//        configuraDAO()
         configuraToolBar()
         configuraDatePickerDialog()
         preencheDadosConta()
+        conta = intent.getSerializableExtra("conta") as Conta
+        extrato_textview_nome_titular.text = conta.nomeTitular
+        extrato_textview_saldo_total.text = conta.saldo.formataMoedaParaBrasileiro()
+        extrato_textview_nome_banco.text = conta.apelido
+        extrato_textview_numero_agencia.text = conta.agencia
+        extrato_textview_numero_conta.text = conta.numeroConta
         configuraRecyclerView()
-        webClient.buscaExtrato(
-            conta.idBanco,
-            "20191111",
-            "20191113",
-            quandoSucesso = {
-                adapter.atualiza(it!!.data)
-            }, quandoFalha = {
-                Toast.makeText(this, it, Toast.LENGTH_SHORT).show()
-            })
+        viewModel.buscaExtrato(contaId = conta.idBanco.toLong()).observe( this, androidx.lifecycle.Observer { transacoes->
+            transacoes?.dado?.let {
+                adapter.atualiza(it)
+            }
+        })
+
+
+//        webClient.buscaExtrato(
+//            conta.idBanco,
+//            "20191111",
+//            "20191113",
+//            quandoSucesso = {
+//                adapter.atualiza(it!!.data)
+//            }, quandoFalha = {
+//                Toast.makeText(this, it, Toast.LENGTH_SHORT).show()
+//            })
     }
 
-    private fun configuraDAO() {
-        val database = GuiaBolsoDatabase.getInstance(this)
-        transacaoDAO = database.transacaoDAO
-    }
+//    private fun configuraDAO() {
+//        val database = GuiaBolsoDatabase.getInstance(this)
+//        transacaoDAO = database.transacaoDAO
+//    }
 
     private fun preencheDadosConta() {
         conta = intent.getSerializableExtra("conta") as Conta

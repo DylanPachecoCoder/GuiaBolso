@@ -1,13 +1,14 @@
-package br.com.ajchagas.guiabolsobrq.ui.recyclerview.adapter
+package com.fatec.guiabolsodylan.ui.recyclerview.adapter
 
 import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
-import br.com.ajchagas.guiabolsobrq.model.listaExtratoApi.Data
-import com.fatec.guiabolsodylan.model.TipoTransacao
 import com.fatec.guiabolsodylan.R
+import com.fatec.guiabolsodylan.extension.formataMoedaParaBrasileiro
+import com.fatec.guiabolsodylan.model.Transacao
+import com.fatec.guiabolsodylan.model.listaExtratoApi.Data
 import kotlinx.android.synthetic.main.extrato_item_transacao.view.*
 
 class ListTransacoesAdapter(
@@ -45,7 +46,7 @@ class ListTransacoesAdapter(
 
         nome.text = transacao.lancamento
         data.text = transacao.data_operacao
-        valor.text = transacao.valor.toString()
+        valor.text = transacao.valor.formataMoedaParaBrasileiro()
 //        if(transacao.tipo_operacao == TipoTransacao.Credito.toString()){
 //            valor.text = transacao.valor
 //        }else{
