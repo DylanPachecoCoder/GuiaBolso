@@ -7,17 +7,20 @@ import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
 import com.fatec.guiabolsodylan.database.converter.BigDecimalConverter
 import com.fatec.guiabolsodylan.database.converter.TipoTransacaoConverter
-import com.fatec.guiabolsodylan.model.Conta
 import com.fatec.guiabolsodylan.database.dao.ContaDAO
+import com.fatec.guiabolsodylan.database.dao.DataDAO
 import com.fatec.guiabolsodylan.database.dao.TransacaoDAO
+import com.fatec.guiabolsodylan.model.Conta
 import com.fatec.guiabolsodylan.model.Transacao
+import com.fatec.guiabolsodylan.model.listaExtratoApi.Data
 
-@Database(entities = [Conta::class, Transacao::class], version = 4, exportSchema = false)
+@Database(entities = [Conta::class, Transacao::class, Data::class], version = 5, exportSchema = false)
 @TypeConverters(*[BigDecimalConverter::class, TipoTransacaoConverter::class])
 abstract class GuiaBolsoDatabase : RoomDatabase() {
 
     abstract val contaDAO: ContaDAO
     abstract val transacaoDAO: TransacaoDAO
+    abstract val dataDAO: DataDAO
 
     companion object {
 

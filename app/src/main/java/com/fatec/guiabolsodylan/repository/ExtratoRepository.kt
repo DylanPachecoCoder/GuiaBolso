@@ -4,18 +4,22 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
 import br.com.alura.technews.retrofit.webclient.BancoWebClient
-import com.fatec.guiabolsodylan.database.dao.TransacaoDAO
-import com.fatec.guiabolsodylan.model.Transacao
+import com.fatec.guiabolsodylan.database.asynctask.BaseAsyncTask
+import com.fatec.guiabolsodylan.database.dao.DataDAO
 import com.fatec.guiabolsodylan.model.listaExtratoApi.Data
 
 class ExtratoRepository(
-    private val dao: TransacaoDAO,
+    private val dao: DataDAO,
     private val webClient: BancoWebClient = BancoWebClient()
 ) {
 
     private val mediador = MediatorLiveData<Resource<List<Data>?>>()
 
     fun buscaExtrato(contaId: Long): LiveData<Resource<List<Data>?>> {
+
+        mediador.addSource(buscaInterno(contaId)){ transacoesEncontradas ->
+            mediador.value = Resource(dado = transacoesEncontradas)
+        }
 
         val falhasDaWebApiLiveData = MutableLiveData<Resource<List<Data>?>>()
         mediador.addSource(falhasDaWebApiLiveData) { resourceDeFalha ->
@@ -27,51 +31,42 @@ class ExtratoRepository(
             }
             mediador.value = resourceNovo
         }
-
-//        buscaNaApi(
-//            quandoFalha = { erro ->
-//                falhasDaWebApiLiveData.value = Resource(dado = null, erro = erro)
-//            }, contaId = contaId.toString()
-//        )
-
-        val contaIdInt = contaId.toInt()
-        webClient.buscaExtrato(
-            contaIdInt,
-            "20191111",
-            "20191113",
-            quandoSucesso = { Extrato ->
-                Extrato?.data?.let { transacoes ->
-                    mediador.value = Resource(dado = transacoes)
-                }
-            }, quandoFalha = { erro ->
+        buscaNaApi(
+            contaId.toInt(),
+            quandoFalha = { erro ->
                 falhasDaWebApiLiveData.value = Resource(dado = null, erro = erro)
-            }
-        )
+            })
         return mediador
     }
 
     private fun buscaNaApi(
-        contaId: String,
+        contaId: Int,
         quandoFalha: (erro: String?) -> Unit
     ) {
-        val contaIdInt = Integer.valueOf(contaId)
         webClient.buscaExtrato(
-            contaIdInt,
+            contaId,
             "20191111",
             "20191113",
             quandoSucesso = { Extrato ->
                 Extrato?.data?.let { transacoes ->
-
+                    salvaInterno(transacoes, contaId.toLong())
                 }
             }, quandoFalha = quandoFalha
         )
     }
 
-    private fun buscaExtratoInterno(contaId: Long): LiveData<List<Transacao>?> {
-        return dao.all(contaId = contaId)
+    private fun buscaInterno(contaId: Long): LiveData<List<Data>?> {
+        return dao.all(contaId)
     }
 
-//    private fun salvaExtratoInterno(transacoes: List<Data>) {
-//        dao.addAll(transacoes)
-//    }
+    private fun salvaInterno(transacoes: List<Data>, contaId: Long) {
+        BaseAsyncTask(
+            quandoExecuta = {
+                for(transacao : Data in transacoes){
+                    transacao.contaId = contaId
+                    dao.add(transacao)
+                }
+            }, quandoFinaliza = {}
+        ).execute()
+    }
 }

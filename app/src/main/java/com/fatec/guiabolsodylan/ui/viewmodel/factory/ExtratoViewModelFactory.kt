@@ -14,7 +14,7 @@ class ExtratoViewModelFactory (
 
     @Suppress("UNCHECKED_CAST")
     override fun <T : ViewModel?> create(modelClass: Class<T>): T {
-        val repository = ExtratoRepository(GuiaBolsoDatabase.getInstance(context).transacaoDAO)
+        val repository = ExtratoRepository(GuiaBolsoDatabase.getInstance(context).dataDAO)
         return ExtratoActivityViewModel(repository) as T
     }
 
