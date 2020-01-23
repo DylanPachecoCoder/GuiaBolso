@@ -1,9 +1,9 @@
-package com.fatec.guiabolsodylan.ui.activity.extensions
+package com.fatec.guiabolsodylan.extension
 
 import android.app.Activity
 import android.widget.Toast
 
-fun Activity.mostraErro(mensagem: String) {
+fun Activity.mostra(mensagem: String) {
     Toast.makeText(
         this,
         mensagem,

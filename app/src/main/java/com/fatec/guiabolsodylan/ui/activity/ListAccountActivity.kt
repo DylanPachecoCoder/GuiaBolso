@@ -9,8 +9,8 @@ import androidx.lifecycle.ViewModelProviders
 import br.com.ajchagas.guiabolsobrq.ui.recyclerview.adapter.ListAccountAdapter
 import com.fatec.guiabolsodylan.R
 import com.fatec.guiabolsodylan.extension.formataMoedaParaBrasileiro
+import com.fatec.guiabolsodylan.extension.mostra
 import com.fatec.guiabolsodylan.model.Conta
-import com.fatec.guiabolsodylan.ui.activity.extensions.mostraErro
 import com.fatec.guiabolsodylan.ui.dialog.DialogListaContasActivity
 import com.fatec.guiabolsodylan.ui.viewmodel.ListaContasActivityViewModel
 import com.fatec.guiabolsodylan.ui.viewmodel.factory.ListaContasViewModelFactory
@@ -47,7 +47,7 @@ class ListAccountActivity : AppCompatActivity() {
                 adapter.atualiza(listaDeContas)
                 preencheSaldo(listaDeContas)
             }
-            resource.erro?.let { mostraErro(it) }
+            resource.erro?.let { mostra(it) }
         })
     }
 

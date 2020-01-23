@@ -7,6 +7,7 @@ import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
 import com.fatec.guiabolsodylan.database.converter.BigDecimalConverter
 import com.fatec.guiabolsodylan.database.converter.TipoTransacaoConverter
+import com.fatec.guiabolsodylan.database.dao.BancoDAO
 import com.fatec.guiabolsodylan.database.dao.ContaDAO
 import com.fatec.guiabolsodylan.database.dao.DataDAO
 import com.fatec.guiabolsodylan.database.dao.TransacaoDAO

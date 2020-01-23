@@ -3,12 +3,12 @@ package com.fatec.guiabolsodylan.ui.activity
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProviders
-import com.fatec.guiabolsodylan.ui.recyclerview.adapter.ListTransacoesAdapter
 import com.fatec.guiabolsodylan.R
 import com.fatec.guiabolsodylan.extension.formataMoedaParaBrasileiro
+import com.fatec.guiabolsodylan.extension.mostra
 import com.fatec.guiabolsodylan.model.Conta
-import com.fatec.guiabolsodylan.ui.activity.extensions.mostraErro
 import com.fatec.guiabolsodylan.ui.dialog.DialogExtratoActivity
+import com.fatec.guiabolsodylan.ui.recyclerview.adapter.ListTransacoesAdapter
 import com.fatec.guiabolsodylan.ui.viewmodel.ExtratoActivityViewModel
 import com.fatec.guiabolsodylan.ui.viewmodel.factory.ExtratoViewModelFactory
 import kotlinx.android.synthetic.main.activity_extrato.*
@@ -47,7 +47,7 @@ class ExtratoActivity : AppCompatActivity() {
         viewModel.buscaExtrato(contaId = conta.idBanco.toLong())
             .observe(this, androidx.lifecycle.Observer { resource ->
                 resource.dado?.let { adapter.atualiza(it) }
-                resource.erro?.let { mostraErro("Não foi possível carregar atualizações") }
+                resource.erro?.let { mostra("Não foi possível carregar atualizações") }
             })
     }
 

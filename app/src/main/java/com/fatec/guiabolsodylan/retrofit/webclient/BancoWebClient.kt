@@ -48,7 +48,7 @@ class BancoWebClient(
         )
     }
 
-    fun buscaContas(
+    fun buscaBancos(
         quandoSucesso: (contas: Banco?) -> Unit,
         quandoFalha: (erro: String?) -> Unit
     ) {

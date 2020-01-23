@@ -1,4 +1,4 @@
-package br.com.ajchagas.guiabolsobrq.validator
+package com.fatec.guiabolsodylan.validator
 
 import com.google.android.material.textfield.TextInputLayout
 
