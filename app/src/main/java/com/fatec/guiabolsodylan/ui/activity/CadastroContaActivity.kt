@@ -9,7 +9,7 @@ import androidx.lifecycle.ViewModelProviders
 import com.fatec.guiabolsodylan.R
 import com.fatec.guiabolsodylan.extension.mostra
 import com.fatec.guiabolsodylan.model.Conta
-import com.fatec.guiabolsodylan.model.listaBancoApi.Data
+import com.fatec.guiabolsodylan.model.listaBancoApi.Banco
 import com.fatec.guiabolsodylan.ui.viewmodel.CadastroActivityViewModel
 import com.fatec.guiabolsodylan.ui.viewmodel.factory.CadastroViewModelFactory
 import kotlinx.android.synthetic.main.activity_cadastro.*
@@ -52,7 +52,7 @@ class CadastroContaActivity : AppCompatActivity() {
     }
 
     private fun configuraBotaoSalvar() {
-        cadastro_botao_Salvar.setOnClickListener { view ->
+        cadastro_botao_Salvar.setOnClickListener {
             if (viewModel.validaTodosOsCampos()) {
                 salvaConta()
             }
@@ -77,8 +77,8 @@ class CadastroContaActivity : AppCompatActivity() {
         }
     }
 
-    private fun pegaDadosPreenchidos(): Pair<Data, Conta> {
-        val bancoSelecionado = spinnerBancos.selectedItem as Data
+    private fun pegaDadosPreenchidos(): Pair<Banco, Conta> {
+        val bancoSelecionado = spinnerBancos.selectedItem as Banco
         val apelido = cadastro_edit_text_apelido.text.toString()
         val nomeTitular = cadastro_edit_text_nome_titular.text.toString()
         val agencia = cadastro_edit_text_agencia.text.toString()
@@ -96,7 +96,7 @@ class CadastroContaActivity : AppCompatActivity() {
         return Pair(bancoSelecionado, novaConta)
     }
 
-    private fun configuraSpinner(listaBancos: List<Data>) {
+    private fun configuraSpinner(listaBancos: List<Banco>) {
         spinnerBancos = cadastro_spinner_bancos
         spinnerBancos.adapter =
             ArrayAdapter(

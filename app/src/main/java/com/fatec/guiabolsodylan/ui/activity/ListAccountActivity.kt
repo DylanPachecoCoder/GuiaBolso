@@ -43,6 +43,7 @@ class ListAccountActivity : AppCompatActivity() {
 
     private fun buscaContas() {
         viewModel.buscaContas().observe(this, Observer { resource ->
+
             resource.dado?.let { listaDeContas ->
                 adapter.atualiza(listaDeContas)
                 preencheSaldo(listaDeContas)

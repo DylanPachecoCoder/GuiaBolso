@@ -16,9 +16,9 @@ class DialogListaContasActivity(
     private val viewModel: ListaContasActivityViewModel
 ) {
 
-    fun configuraContextMenuDialog(item: MenuItem, conta: Conta) {
+    fun configuraContextMenuDialog(menuEscolhido: MenuItem, conta: Conta) {
 
-        when (item.groupId) {
+        when (menuEscolhido.groupId) {
             0 -> configuraDialog(
                 conta,
                 "Editar apelido",

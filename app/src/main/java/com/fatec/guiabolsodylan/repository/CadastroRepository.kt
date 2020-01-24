@@ -6,27 +6,27 @@ import androidx.lifecycle.MutableLiveData
 import br.com.alura.technews.retrofit.webclient.BancoWebClient
 import com.fatec.guiabolsodylan.database.GuiaBolsoDatabase
 import com.fatec.guiabolsodylan.database.asynctask.BaseAsyncTask
-import com.fatec.guiabolsodylan.database.dao.BancoDAO
 import com.fatec.guiabolsodylan.model.Conta
-import com.fatec.guiabolsodylan.model.listaBancoApi.Data
+import com.fatec.guiabolsodylan.model.listaBancoApi.Banco
 
 class CadastroRepository(
-    private val database: GuiaBolsoDatabase,
+    database: GuiaBolsoDatabase,
     private val webClient: BancoWebClient = BancoWebClient()
 ) {
-    private val mediador = MediatorLiveData<Resource<List<Data>?>>()
+    private val mediador = MediatorLiveData<Resource<List<Banco>?>>()
     private val contaDAO = database.contaDAO
+    private val bancoDAO = database.bancoDAO
 
-    fun buscaBancos(): LiveData<Resource<List<Data>?>> {
+    fun buscaBancos(): LiveData<Resource<List<Banco>?>> {
 
-//        mediador.addSource(buscaInterno()){ bancosEncontrados ->
-//            mediador.value = Resource(dado = bancosEncontrados)
-//        }
+        mediador.addSource(buscaInterno()){ bancosEncontrados ->
+            mediador.value = Resource(dado = bancosEncontrados)
+        }
 
-        val falhasDaWebApiLiveData = MutableLiveData<Resource<List<Data>?>>()
+        val falhasDaWebApiLiveData = MutableLiveData<Resource<List<Banco>?>>()
         mediador.addSource(falhasDaWebApiLiveData) { resourceDeFalha ->
             val resourceAtual = mediador.value
-            val resourceNovo: Resource<List<Data>?> = if (resourceAtual != null) {
+            val resourceNovo: Resource<List<Banco>?> = if (resourceAtual != null) {
                 Resource(dado = resourceAtual.dado, erro = resourceDeFalha.erro)
             } else {
                 resourceDeFalha
@@ -41,15 +41,26 @@ class CadastroRepository(
         return mediador
     }
 
+    private fun buscaInterno(): LiveData<List<Banco>?> {
+        return bancoDAO.all()
+    }
+
     private fun buscaNaApi(
         quandoFalha: (erro: String?) -> Unit
     ) {
         webClient.buscaBancos(
             quandoSucesso = {
                 it?.data?.let {
-                    mediador.value = Resource(dado = it)
+                    salvaInterno(it)
                 }
             }, quandoFalha = quandoFalha)
+    }
+
+    private fun salvaInterno(bancos: List<Banco>) {
+        BaseAsyncTask(quandoExecuta = {
+            bancoDAO.add(bancos)
+        }, quandoFinaliza = {}
+        ).execute()
     }
 
     fun salvaConta(novaConta: Conta) {

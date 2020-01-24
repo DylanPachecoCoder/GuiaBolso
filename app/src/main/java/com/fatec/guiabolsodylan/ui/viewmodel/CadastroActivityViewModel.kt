@@ -3,12 +3,11 @@ package com.fatec.guiabolsodylan.ui.viewmodel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
 import com.fatec.guiabolsodylan.model.Conta
-import com.fatec.guiabolsodylan.model.listaBancoApi.Data
+import com.fatec.guiabolsodylan.model.listaBancoApi.Banco
 import com.fatec.guiabolsodylan.repository.CadastroRepository
 import com.fatec.guiabolsodylan.repository.Resource
 import com.fatec.guiabolsodylan.validator.ValidacaoPadrao
 import com.google.android.material.textfield.TextInputLayout
-import kotlinx.android.synthetic.main.activity_cadastro.*
 
 class CadastroActivityViewModel(
     private val repository: CadastroRepository
@@ -16,7 +15,7 @@ class CadastroActivityViewModel(
 
     private val validators: MutableList<ValidacaoPadrao> = mutableListOf()
 
-    fun buscaBancos() : LiveData<Resource<List<Data>?>> {
+    fun buscaBancos() : LiveData<Resource<List<Banco>?>> {
         return repository.buscaBancos()
     }
 

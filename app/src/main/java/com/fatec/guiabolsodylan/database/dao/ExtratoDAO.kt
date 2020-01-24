@@ -5,20 +5,20 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
-import com.fatec.guiabolsodylan.model.listaExtratoApi.Data
+import com.fatec.guiabolsodylan.model.listaExtratoApi.Extrato
 
 @Dao
-interface DataDAO {
+interface ExtratoDAO {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun add(vararg transacao: Data)
+    fun add(vararg transacao: Extrato)
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun add(noticias: List<Data>)
+    fun add(noticias: List<Extrato>)
 
-    @Query("SELECT * FROM data WHERE contaId = :contaId")
-    fun all(contaId: Long): LiveData<List<Data>?>
+    @Query("SELECT * FROM extrato WHERE contaId = :contaId")
+    fun all(contaId: Long): LiveData<List<Extrato>?>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun atualiza(vararg transacao: Data)
+    fun atualiza(vararg transacao: Extrato)
 }

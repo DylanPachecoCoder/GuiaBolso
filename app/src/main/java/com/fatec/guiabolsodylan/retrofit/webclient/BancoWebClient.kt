@@ -1,8 +1,8 @@
 package br.com.alura.technews.retrofit.webclient
 
-import com.fatec.guiabolsodylan.model.listaExtratoApi.Extrato
 import br.com.alura.technews.retrofit.AppRetrofit
 import com.fatec.guiabolsodylan.model.listaBancoApi.Banco
+import com.fatec.guiabolsodylan.model.listaBancoApi.Data
 import com.fatec.guiabolsodylan.retrofit.service.BancoService
 import retrofit2.Call
 import retrofit2.Callback
@@ -38,7 +38,7 @@ class BancoWebClient(
         contaId: Int,
         dataDe: String,
         dataAte: String,
-        quandoSucesso: (transacoes: Extrato?) -> Unit,
+        quandoSucesso: (transacoes: com.fatec.guiabolsodylan.model.listaExtratoApi.Data?) -> Unit,
         quandoFalha: (erro: String?) -> Unit
     ) {
         executaRequisicao(
@@ -49,7 +49,7 @@ class BancoWebClient(
     }
 
     fun buscaBancos(
-        quandoSucesso: (contas: Banco?) -> Unit,
+        quandoSucesso: (contas: Data?) -> Unit,
         quandoFalha: (erro: String?) -> Unit
     ) {
         executaRequisicao(

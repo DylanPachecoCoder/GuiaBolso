@@ -5,26 +5,26 @@ import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
 import br.com.alura.technews.retrofit.webclient.BancoWebClient
 import com.fatec.guiabolsodylan.database.asynctask.BaseAsyncTask
-import com.fatec.guiabolsodylan.database.dao.DataDAO
-import com.fatec.guiabolsodylan.model.listaExtratoApi.Data
+import com.fatec.guiabolsodylan.database.dao.ExtratoDAO
+import com.fatec.guiabolsodylan.model.listaExtratoApi.Extrato
 
 class ExtratoRepository(
-    private val dao: DataDAO,
+    private val dao: ExtratoDAO,
     private val webClient: BancoWebClient = BancoWebClient()
 ) {
 
-    private val mediador = MediatorLiveData<Resource<List<Data>?>>()
+    private val mediador = MediatorLiveData<Resource<List<Extrato>?>>()
 
-    fun buscaExtrato(contaId: Long): LiveData<Resource<List<Data>?>> {
+    fun buscaExtrato(contaId: Long): LiveData<Resource<List<Extrato>?>> {
 
         mediador.addSource(buscaInterno(contaId)){ transacoesEncontradas ->
             mediador.value = Resource(dado = transacoesEncontradas)
         }
 
-        val falhasDaWebApiLiveData = MutableLiveData<Resource<List<Data>?>>()
+        val falhasDaWebApiLiveData = MutableLiveData<Resource<List<Extrato>?>>()
         mediador.addSource(falhasDaWebApiLiveData) { resourceDeFalha ->
             val resourceAtual = mediador.value
-            val resourceNovo: Resource<List<Data>?> = if (resourceAtual != null) {
+            val resourceNovo: Resource<List<Extrato>?> = if (resourceAtual != null) {
                 Resource(dado = resourceAtual.dado, erro = resourceDeFalha.erro)
             } else {
                 resourceDeFalha
@@ -55,14 +55,14 @@ class ExtratoRepository(
         )
     }
 
-    private fun buscaInterno(contaId: Long): LiveData<List<Data>?> {
+    private fun buscaInterno(contaId: Long): LiveData<List<Extrato>?> {
         return dao.all(contaId)
     }
 
-    private fun salvaInterno(transacoes: List<Data>, contaId: Long) {
+    private fun salvaInterno(transacoes: List<Extrato>, contaId: Long) {
         BaseAsyncTask(
             quandoExecuta = {
-                for(transacao : Data in transacoes){
+                for(transacao : Extrato in transacoes){
                     transacao.contaId = contaId
                     dao.add(transacao)
                 }

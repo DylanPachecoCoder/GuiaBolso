@@ -7,16 +7,15 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.fatec.guiabolsodylan.R
 import com.fatec.guiabolsodylan.extension.formataMoedaParaBrasileiro
-import com.fatec.guiabolsodylan.model.Transacao
-import com.fatec.guiabolsodylan.model.listaExtratoApi.Data
+import com.fatec.guiabolsodylan.model.listaExtratoApi.Extrato
 import kotlinx.android.synthetic.main.extrato_item_transacao.view.*
 
 class ListTransacoesAdapter(
-    private val listaTransacoes: MutableList<Data> = mutableListOf(),
+    private val listaTransacoes: MutableList<Extrato> = mutableListOf(),
     private val context: Context
 ) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
-    fun atualiza(transacoes: List<Data>) {
+    fun atualiza(transacoes: List<Extrato>) {
         notifyItemRangeRemoved(0, this.listaTransacoes.size)
         this.listaTransacoes.clear()
         this.listaTransacoes.addAll(transacoes)
@@ -39,7 +38,7 @@ class ListTransacoesAdapter(
 
     class ViewHolder(itemView : View) : RecyclerView.ViewHolder(itemView)
 
-    fun RecyclerView.ViewHolder.bindView(transacao: Data) {
+    fun RecyclerView.ViewHolder.bindView(transacao: Extrato) {
         val nome = itemView.list_transacoes_nome_transacao
         val data = itemView.list_transacoes_data_transacao
         val valor= itemView.list_transacoes_valor_transacao
@@ -47,13 +46,6 @@ class ListTransacoesAdapter(
         nome.text = transacao.lancamento
         data.text = transacao.data_operacao
         valor.text = transacao.valor.formataMoedaParaBrasileiro()
-//        if(transacao.tipo_operacao == TipoTransacao.Credito.toString()){
-//            valor.text = transacao.valor
-//        }else{
-//            valor.text = "- " + transacao.valor
-//        }
-
-
     }
 
 }

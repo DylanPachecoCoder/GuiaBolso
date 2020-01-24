@@ -6,22 +6,21 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
 import com.fatec.guiabolsodylan.database.converter.BigDecimalConverter
-import com.fatec.guiabolsodylan.database.converter.TipoTransacaoConverter
 import com.fatec.guiabolsodylan.database.dao.BancoDAO
 import com.fatec.guiabolsodylan.database.dao.ContaDAO
-import com.fatec.guiabolsodylan.database.dao.DataDAO
-import com.fatec.guiabolsodylan.database.dao.TransacaoDAO
+import com.fatec.guiabolsodylan.database.dao.ExtratoDAO
 import com.fatec.guiabolsodylan.model.Conta
-import com.fatec.guiabolsodylan.model.Transacao
-import com.fatec.guiabolsodylan.model.listaExtratoApi.Data
+import com.fatec.guiabolsodylan.model.listaBancoApi.Banco
+import com.fatec.guiabolsodylan.model.listaExtratoApi.Extrato
 
-@Database(entities = [Conta::class, Transacao::class, Data::class], version = 5, exportSchema = false)
-@TypeConverters(*[BigDecimalConverter::class, TipoTransacaoConverter::class])
+
+@Database(entities = [Conta::class, Extrato::class, Banco::class], version = 6, exportSchema = false)
+@TypeConverters(*[BigDecimalConverter::class])
 abstract class GuiaBolsoDatabase : RoomDatabase() {
 
     abstract val contaDAO: ContaDAO
-    abstract val transacaoDAO: TransacaoDAO
-    abstract val dataDAO: DataDAO
+    abstract val dataDAO: ExtratoDAO
+    abstract val bancoDAO: BancoDAO
 
     companion object {
 
