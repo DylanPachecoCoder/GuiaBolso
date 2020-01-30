@@ -5,12 +5,15 @@ import androidx.lifecycle.ViewModel
 import com.fatec.guiabolsodylan.model.listaExtratoApi.Extrato
 import com.fatec.guiabolsodylan.repository.ExtratoRepository
 import com.fatec.guiabolsodylan.repository.Resource
+import com.fatec.guiabolsodylan.usecase.DetalhesContaUseCase
 
 class ExtratoActivityViewModel(
-    private val repository: ExtratoRepository
+    repository: ExtratoRepository
 ) : ViewModel() {
 
+    private val extratoUseCase = DetalhesContaUseCase(repository)
+
     fun buscaExtrato(contaId : Long) : LiveData<Resource<List<Extrato>?>> {
-        return repository.buscaExtrato(contaId)
+        return extratoUseCase.buscaExtrato(contaId)
     }
 }

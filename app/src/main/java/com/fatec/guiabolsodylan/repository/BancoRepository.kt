@@ -4,18 +4,17 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
 import br.com.alura.technews.retrofit.webclient.BancoWebClient
-import com.fatec.guiabolsodylan.database.GuiaBolsoDatabase
-import com.fatec.guiabolsodylan.database.asynctask.BaseAsyncTask
-import com.fatec.guiabolsodylan.model.Conta
+import com.fatec.guiabolsodylan.database.dao.BancoDAO
 import com.fatec.guiabolsodylan.model.listaBancoApi.Banco
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
-class CadastroRepository(
-    database: GuiaBolsoDatabase,
+class BancoRepository(
+    private val bancoDAO: BancoDAO,
     private val webClient: BancoWebClient = BancoWebClient()
 ) {
     private val mediador = MediatorLiveData<Resource<List<Banco>?>>()
-    private val contaDAO = database.contaDAO
-    private val bancoDAO = database.bancoDAO
 
     fun buscaBancos(): LiveData<Resource<List<Banco>?>> {
 
@@ -57,17 +56,8 @@ class CadastroRepository(
     }
 
     private fun salvaInterno(bancos: List<Banco>) {
-        BaseAsyncTask(quandoExecuta = {
+        CoroutineScope(Dispatchers.IO).launch {
             bancoDAO.add(bancos)
-        }, quandoFinaliza = {}
-        ).execute()
+        }
     }
-
-    fun salvaConta(novaConta: Conta) {
-        BaseAsyncTask(quandoExecuta = {
-            contaDAO.add(novaConta)
-        }, quandoFinaliza = {}
-        ).execute()
-    }
-
 }

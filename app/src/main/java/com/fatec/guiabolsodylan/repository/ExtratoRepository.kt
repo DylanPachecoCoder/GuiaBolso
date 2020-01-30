@@ -4,9 +4,11 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
 import br.com.alura.technews.retrofit.webclient.BancoWebClient
-import com.fatec.guiabolsodylan.database.asynctask.BaseAsyncTask
 import com.fatec.guiabolsodylan.database.dao.ExtratoDAO
 import com.fatec.guiabolsodylan.model.listaExtratoApi.Extrato
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 class ExtratoRepository(
     private val dao: ExtratoDAO,
@@ -60,13 +62,12 @@ class ExtratoRepository(
     }
 
     private fun salvaInterno(transacoes: List<Extrato>, contaId: Long) {
-        BaseAsyncTask(
-            quandoExecuta = {
-                for(transacao : Extrato in transacoes){
-                    transacao.contaId = contaId
-                    dao.add(transacao)
-                }
-            }, quandoFinaliza = {}
-        ).execute()
+
+        CoroutineScope(Dispatchers.IO).launch {
+            for(transacao : Extrato in transacoes){
+                transacao.contaId = contaId
+                dao.add(transacao)
+            }
+        }
     }
 }

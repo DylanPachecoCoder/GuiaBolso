@@ -2,11 +2,11 @@ package com.fatec.guiabolsodylan.repository
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MediatorLiveData
-import br.com.alura.technews.retrofit.webclient.BancoWebClient
-import com.fatec.guiabolsodylan.database.GuiaBolsoDatabase
-import com.fatec.guiabolsodylan.database.asynctask.BaseAsyncTask
 import com.fatec.guiabolsodylan.database.dao.ContaDAO
 import com.fatec.guiabolsodylan.model.Conta
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 class ContaRepository(
     private val dao: ContaDAO
@@ -26,17 +26,20 @@ class ContaRepository(
     }
 
     fun edita(conta: Conta) {
-        BaseAsyncTask(
-            quandoExecuta = {
-                dao.update(conta)
-            }, quandoFinaliza = {}
-        ).execute()
+        CoroutineScope(Dispatchers.IO).launch {
+            dao.update(conta)
+        }
     }
 
     fun removeConta(conta: Conta) {
-        BaseAsyncTask(quandoExecuta = {
+        CoroutineScope(Dispatchers.IO).launch {
             dao.remove(conta)
-        }, quandoFinaliza = {}
-        ).execute()
+        }
+    }
+
+    fun salvaConta(novaConta: Conta) {
+        CoroutineScope(Dispatchers.IO).launch {
+            dao.add(novaConta)
+        }
     }
 }
